@@ -13,4 +13,48 @@ public class Pago {
     private Pedido pedido;
     private MetodoPago metodopago;
     private double monto;
+
+    public Pago() {
+    }
+
+    public Pago(int idPago, Pedido pedido, MetodoPago metodopago, double monto) {
+        this.idPago = idPago;
+        this.pedido = pedido;
+        this.metodopago = metodopago;
+        this.monto = monto;
+    }
+
+    public int getIdPago() {
+        return idPago;
+    }
+
+    public void setIdPago(int idPago) {
+        this.idPago = idPago;
+    }
+
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
+
+    public MetodoPago getMetodopago() {
+        return metodopago;
+    }
+
+    public void setMetodopago(MetodoPago metodopago) {
+        this.metodopago = metodopago;
+    }
+
+    public double getMonto() {
+        return monto;
+    }
+
+    public void setMonto(double monto) {
+        this.monto = monto;
+    }
+    
+    
 }
