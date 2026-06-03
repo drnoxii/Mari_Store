@@ -4,6 +4,8 @@
  */
 package Model;
 
+import java.util.List;
+
 /**
  *
  * @author spide
@@ -17,6 +19,7 @@ public class Productos {
     private double precio;
     private String imagen; 
     private Categoria categoria;
+    private List<Detalle_Producto> variantes;
 
     public Productos() {
     }
@@ -30,6 +33,11 @@ public class Productos {
         this.imagen = imagen;
         this.categoria = categoria;
     }
+
+    public Productos(List<Detalle_Producto> variantes) {
+        this.variantes = variantes;
+    }
+    
 
     public int getIdProducto() {
         return idProducto;
@@ -85,6 +93,14 @@ public class Productos {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public List<Detalle_Producto> getVariantes() {
+        return variantes;
+    }
+
+    public void setVariantes(List<Detalle_Producto> variantes) {
+        this.variantes = variantes;
     }
 
     

@@ -13,5 +13,50 @@ public class Pedido {
     private Usuario usuario;
     private double total;
     private EstadoPedido estadopedido;
+
+    public Pedido() {
+    }
+
+    public Pedido(int idPedido, Usuario usuario, double total, EstadoPedido estadopedido) {
+        this.idPedido = idPedido;
+        this.usuario = usuario;
+        this.total = total;
+        this.estadopedido = estadopedido;
+    }
+
+    public int getIdPedido() {
+        return idPedido;
+    }
+
+    public void setIdPedido(int idPedido) {
+        this.idPedido = idPedido;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public EstadoPedido getEstadopedido() {
+        return estadopedido;
+    }
+
+    public void setEstadopedido(EstadoPedido estadopedido) {
+        this.estadopedido = estadopedido;
+    }
+    
+    
+    
     
 }
