@@ -4,6 +4,8 @@
  */
 package Model;
 
+import java.util.List;
+
 /**
  *
  * @author spide
@@ -13,6 +15,7 @@ public class Pedido {
     private Usuario usuario;
     private double total;
     private EstadoPedido estadopedido;
+    private List<Carrito> detallePedido;
 
     public Pedido() {
     }
@@ -23,6 +26,19 @@ public class Pedido {
         this.total = total;
         this.estadopedido = estadopedido;
     }
+
+    public Pedido(List<Carrito> detallePedido) {
+        this.detallePedido = detallePedido;
+    }
+
+    public List<Carrito> getDetallePedido() {
+        return detallePedido;
+    }
+
+    public void setDetallePedido(List<Carrito> detallePedido) {
+        this.detallePedido = detallePedido;
+    }
+    
 
     public int getIdPedido() {
         return idPedido;

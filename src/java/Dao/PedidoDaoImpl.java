@@ -30,12 +30,12 @@ public class PedidoDaoImpl implements IPedido{
         
         try {
             
-            query = "INSERT INTO pedido(id_usuario,total , estado) "
+            query = "INSERT INTO pedido(idUsuario,total , estado) "
                     + "VALUES (?,?,?)";
             cn = ConexionSingleton.getConnection();
             st = cn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             
-            st.setInt(1, pedidos.getPersona().getId_persona());
+            st.setInt(1, pedidos.getUsuario().getIdUsuario());
             st.setDouble(2, pedidos.getTotal());
             st.setString(3, pedidos.getEstadopedido().name());
             r =st.executeUpdate();
@@ -48,12 +48,12 @@ public class PedidoDaoImpl implements IPedido{
                    }
                 }
             if (id_pedido > 0 ) {
-                for (Carrito detalle: pedidos.getDetalle_Pedido()) {
-                    query = "INSERT INTO detalles_pedido(id_pedido,id_producto,cantidad, precio_unitario,subtotal) VALUES(?,?,?,?,?)";
+                for (Carrito detalle: pedidos.getDetallePedido()) {
+                    query = "INSERT INTO detalle_pedido(idpedido,idDetalle,cantidad, precio_unitario,subtotal) VALUES(?,?,?,?,?)";
                     
                     st = cn.prepareStatement(query);
                     st.setInt(1, id_pedido);
-                    st.setInt(2, detalle.getIdProducto());
+                    st.setInt(2, detalle.getIdDetalle());
                     st.setInt(3, detalle.getCantidad());
                     st.setDouble(4, detalle.getPrecioCompra());
                     st.setDouble(5, detalle.getSubTotal());

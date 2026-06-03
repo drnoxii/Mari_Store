@@ -12,77 +12,122 @@ import java.util.List;
  * @author spide
  */
 public class Carrito {
-    public class Pedido {
-    private int idPedido;
-    private Persona persona;
-    private double total;
-    private EstadoPedido estadoPedido;
-    private Timestamp fecha;
-    private List<Carrito> detallePedido;
 
-        public Pedido() {
-        }
+    private int idDetalle;          
+    private int idProducto;         
+    private String nombre;          
+    private String descripcion;     
+    private String imagen;          
+    private String talla;           
+    private int cantidad;           
+    private int stock;             
+    private double precioCompra;    
+    private double subTotal;  
 
-        public Pedido(int idPedido, Persona persona, double total, EstadoPedido estadoPedido, Timestamp fecha, List<Carrito> detallePedido) {
-            this.idPedido = idPedido;
-            this.persona = persona;
-            this.total = total;
-            this.estadoPedido = estadoPedido;
-            this.fecha = fecha;
-            this.detallePedido = detallePedido;
-        }
+    public Carrito() {
+    }
 
-        public int getIdPedido() {
-            return idPedido;
-        }
+    public Carrito(int idDetalle, int idProducto, String nombre, String descripcion, String imagen, String talla, int cantidad, int stock, double precioCompra, double subTotal) {
+        this.idDetalle = idDetalle;
+        this.idProducto = idProducto;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.imagen = imagen;
+        this.talla = talla;
+        this.cantidad = cantidad;
+        this.stock = stock;
+        this.precioCompra = precioCompra;
+        this.subTotal = subTotal;
+    }
 
-        public void setIdPedido(int idPedido) {
-            this.idPedido = idPedido;
-        }
+    public int getIdDetalle() {
+        return idDetalle;
+    }
 
-        public Persona getPersona() {
-            return persona;
-        }
+    public void setIdDetalle(int idDetalle) {
+        this.idDetalle = idDetalle;
+    }
 
-        public void setPersona(Persona persona) {
-            this.persona = persona;
-        }
+    public int getIdProducto() {
+        return idProducto;
+    }
 
-        public double getTotal() {
-            return total;
-        }
+    public void setIdProducto(int idProducto) {
+        this.idProducto = idProducto;
+    }
 
-        public void setTotal(double total) {
-            this.total = total;
-        }
+    public String getNombre() {
+        return nombre;
+    }
 
-        public EstadoPedido getEstadoPedido() {
-            return estadoPedido;
-        }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-        public void setEstadoPedido(EstadoPedido estadoPedido) {
-            this.estadoPedido = estadoPedido;
-        }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-        public Timestamp getFecha() {
-            return fecha;
-        }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-        public void setFecha(Timestamp fecha) {
-            this.fecha = fecha;
-        }
+    public String getImagen() {
+        return imagen;
+    }
 
-        public List<Carrito> getDetallePedido() {
-            return detallePedido;
-        }
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
 
-        public void setDetallePedido(List<Carrito> detallePedido) {
-            this.detallePedido = detallePedido;
-        }
+    public String getTalla() {
+        return talla;
+    }
+
+    public void setTalla(String talla) {
+        this.talla = talla;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public double getPrecioCompra() {
+        return precioCompra;
+    }
+
+    public void setPrecioCompra(double precioCompra) {
+        this.precioCompra = precioCompra;
+    }
+
+    public double getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(double subTotal) {
+        this.subTotal = subTotal;
+    }
     
+       
+
+       
+
+        
     
 }
-}
+
     
     
 
