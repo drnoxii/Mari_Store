@@ -4,10 +4,16 @@
  */
 package Interface;
 
+import Model.Pago;
+import java.util.List;
+
 /**
  *
  * @author spide
  */
 public interface IPago {
+    public boolean registrarPago(Pago pago);
+    public Pago buscarPorPedido(int idPedido);
+    public List<Pago> listarPendientes();
     
 }

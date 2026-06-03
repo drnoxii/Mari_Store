@@ -13,15 +13,17 @@ public class Pago {
     private Pedido pedido;
     private MetodoPago metodopago;
     private double monto;
+    private String comprobante;
 
     public Pago() {
     }
 
-    public Pago(int idPago, Pedido pedido, MetodoPago metodopago, double monto) {
+    public Pago(int idPago, Pedido pedido, MetodoPago metodopago, double monto, String comprobante) {
         this.idPago = idPago;
         this.pedido = pedido;
         this.metodopago = metodopago;
         this.monto = monto;
+        this.comprobante = comprobante;
     }
 
     public int getIdPago() {
@@ -55,6 +57,15 @@ public class Pago {
     public void setMonto(double monto) {
         this.monto = monto;
     }
+
+    public String getComprobante() {
+        return comprobante;
+    }
+
+    public void setComprobante(String comprobante) {
+        this.comprobante = comprobante;
+    }
+   
     
     
 }

@@ -12,7 +12,7 @@ import java.time.LocalDate;
  */
 public class Persona {
     
-    private int id_Persona;
+    private int idPersona;
     private String nombre;
     private String apellidos;
     private int DNI;
@@ -22,8 +22,8 @@ public class Persona {
     public Persona() {
     }
 
-    public Persona(int id_Persona, String nombre, String apellidos, int DNI, int telefono, LocalDate fecha_nacimiento) {
-        this.id_Persona = id_Persona;
+    public Persona(int idPersona, String nombre, String apellidos, int DNI, int telefono, LocalDate fecha_nacimiento) {
+        this.idPersona = idPersona;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.DNI = DNI;
@@ -31,12 +31,12 @@ public class Persona {
         this.fecha_nacimiento = fecha_nacimiento;
     }
 
-    public int getId_Persona() {
-        return id_Persona;
+    public int getIdPersona() {
+        return idPersona;
     }
 
-    public void setId_Persona(int id_Persona) {
-        this.id_Persona = id_Persona;
+    public void setId_Persona(int idPersona) {
+        this.idPersona = idPersona;
     }
 
     public String getNombre() {
