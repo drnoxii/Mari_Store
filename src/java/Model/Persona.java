@@ -35,7 +35,7 @@ public class Persona {
         return idPersona;
     }
 
-    public void setId_Persona(int idPersona) {
+    public void setIdPersona(int idPersona) {
         this.idPersona = idPersona;
     }
 

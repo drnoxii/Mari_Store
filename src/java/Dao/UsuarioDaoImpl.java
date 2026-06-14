@@ -52,7 +52,7 @@ Usuario u = null;
                 u.setIdUsuario(rs.getInt("idusuario"));
                 u.setEmail(rs.getString("email"));
                 u.setRol(Rol.valueOf(rs.getString("rol").toUpperCase()));
-                p.setId_Persona(rs.getInt("idpersona"));
+                p.setIdPersona(rs.getInt("idpersona"));
                 p.setNombre(rs.getString("nombre"));
                u.setPersona(p);
             }

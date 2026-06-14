@@ -18,10 +18,12 @@
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Dao/UsuarioDaoImpl.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/Pago.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/Pedido.java</file>
+            <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/test/Test/Test_Pedido.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Controllers/AuthController.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/MetodoPago.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Interface/IPago.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Interface/IPersona.java</file>
+            <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Controllers/AppControler.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Dao/PagoDaoImpl.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/Productos.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/test/Test/Test_Persona.java</file>
@@ -29,8 +31,10 @@
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/test/Test/Test_BD.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/Detalle_Producto.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/Carrito.java</file>
+            <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Controllers/PagoController.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/web/index.html</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Dao/ProductoDaoImpl.java</file>
+            <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Controllers/ProductoController.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Interface/IPedido.java</file>
         </group>
     </open-files>

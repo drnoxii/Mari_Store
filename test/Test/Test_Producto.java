@@ -27,9 +27,9 @@ public class Test_Producto {
        // p.insert();;
         //p.listar();
        // p.buscarid();
-      // p.update();
+       p.update();
       //p.delete();
-      p.updatestock();
+     // p.updatestock();
     }
 
     public void insert() {
@@ -168,7 +168,7 @@ public class Test_Producto {
 
     p.setVariantes(variantes);
 
-     boolean result = dao.insert(p);
+     boolean result = dao.update(p);
         if (result) {
             System.out.println("Producto actualizado");
         }else {

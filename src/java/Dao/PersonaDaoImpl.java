@@ -13,6 +13,7 @@ import java.sql.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,12 +26,41 @@ public class PersonaDaoImpl implements IPersona {
     
     @Override
     public List<Persona> lista() {
+        List<Persona> lista= null;
+        Persona p ;
+        PreparedStatement st;
+        ResultSet rs;
+        String query = null;
 
 
-        return null;
+        try {
+            query = "SELECT idpersona, nombre, apellidos, DNI, telefono FROM persona";
+            lista = new ArrayList<>();
+            
+            cn = ConexionSingleton.getConnection();
+            st = cn.prepareStatement(query);
+            rs = st.executeQuery();
+            
+        while (rs.next()) {
+                p = new Persona();
 
+                p.setIdPersona(rs.getInt("idpersona"));
+                p.setNombre(rs.getString("nombre"));
+                p.setApellidos(rs.getString("apellidos"));
+                p.setDNI(rs.getInt("DNI"));
+                p.setTelefono(rs.getInt("telefono"));
+                
+                lista.add(p);
+            }
 
-    }
+        } catch (Exception e) {
+            System.out.println("Error al listar personas: " + e.getMessage());
+        }
+
+        return lista;
+    
+}
+   
 
     @Override
     public int insert(Persona p, Usuario u) {
@@ -58,7 +88,7 @@ public class PersonaDaoImpl implements IPersona {
                     id_persona = rs.getInt(1);
                     System.out.println("id_recuperado:" + id_persona);
                 }
-                if (id_persona > 0) {
+                if (u.getRol() == null) {
                     u.setRol(Rol.CLIENTE);
                     String hashedPassword = u.HashPassword(u.getContraseña());
                     query = "INSERT INTO usuario(email,contraseña,rol,idpersona)"
@@ -97,17 +127,128 @@ public class PersonaDaoImpl implements IPersona {
 
     @Override
     public boolean update(Persona p) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
+        boolean flag = false;
+        PreparedStatement st;
+        ResultSet rs;
+        String query = null;
+        
+        try {
+            query = "UPDATE persona SET nombre = ?, apellidos = ?, DNI = ?, telefono = ? WHERE idpersona = ?";
+            cn = ConexionSingleton.getConnection();
+            st = cn.prepareStatement(query);
+            
+            
+            st.setString(1, p.getNombre());
+            st.setString(2, p.getApellidos());
+            st.setInt(3, p.getDNI());
+            st.setInt(4, p.getTelefono());
+            st.setInt(5, p.getIdPersona());
+            
+             int r = st.executeUpdate();
+
+        if (r > 0) {
+            flag = true;
+        }
+       } catch (Exception e) {
+            System.out.println("Error al actualizar:" + e.getMessage());
+            try {
+                cn.rollback();
+            } catch (Exception ex) {
+            }
+            flag = false;
+            System.out.println("No se pudo actualizar el producto");
+        } finally {
+            if (cn != null) {
+                try {
+                } catch (Exception ex) {
+                }
+
+            }
+        }
+
+        return flag;
     }
 
     @Override
     public Persona SearchById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+        Persona p = null;
+        PreparedStatement st;
+        ResultSet rs;
+        String query = null;
+        try {
+            query = " SELECT * FROM persona WHERE idPersona=?;";
+            cn = ConexionSingleton.getConnection();
+            st = cn.prepareStatement(query);
+            st.setInt(1, id);
+            rs = st.executeQuery();
+            while (rs.next()) {
+                p = new Persona();
+                p.setIdPersona(rs.getInt("idpersona"));
+                p.setNombre(rs.getString("nombre"));
+                p.setApellidos(rs.getString("apellidos"));
+                p.setDNI(rs.getInt("dni"));
+                p.setTelefono(rs.getInt("telefono"));
+                
+            }
+
+        } catch (Exception e) {
+            System.out.println("Error al buscar por ID:" + e.getMessage());
+            try {
+                cn.rollback();
+            } catch (Exception ex) {
+            }
+            System.out.println("No se pudo buscar por ID");
+        } finally {
+            if (cn != null) {
+                try {
+                } catch (Exception ex) {
+                }
+
+            }
+        }
+        return p;
+
+    }    
 
     @Override
     public boolean delete(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+
+        boolean flag = false;
+        PreparedStatement st;
+        String query;
+        try {
+            cn = ConexionSingleton.getConnection();
+            query = "DELETE FROM usuario WHERE idPersona = ?";
+            st = cn.prepareStatement(query);
+            st.setInt(1, id);
+            st.executeUpdate();
+            
+            query = " DELETE FROM persona WHERE idpersona =?";
+            
+            st = cn.prepareStatement(query);
+            st.setInt(1, id);
+            st.executeUpdate();
+            flag = true;
+
+        } catch (Exception e) {
+            System.out.println("Error al eliminar:" + e.getMessage());
+            try {
+                cn.rollback();
+            } catch (Exception ex) {
+            }
+            flag = false;
+            System.out.println("No se pudo eliminar el producto");
+        } finally {
+            if (cn != null) {
+                try {
+                } catch (Exception ex) {
+                }
+
+            }
+        }
+
+        return flag;
     }
     
 }
