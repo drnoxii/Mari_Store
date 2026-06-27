@@ -83,10 +83,36 @@ public class PedidoDaoImpl implements IPedido{
 
             }
         }
-        return r;
+        return id_pedido;
     }
 
+    @Override
+    public boolean actualizarEstado(int idPedido, String nuevoEstado) {
+    PreparedStatement st;
+    String query = "UPDATE pedido SET estado = ? WHERE idpedido = ?";
+    
+     try {
+            cn = ConexionSingleton.getConnection();
 
+            st = cn.prepareStatement(query);
+            st.setString(1, nuevoEstado);
+            st.setInt(2, idPedido);
+
+            return st.executeUpdate() > 0;
+
+        } catch (Exception e) {
+            System.out.println("error al actualizar estado: " + e.getMessage());
+            return false;
+
+        } finally {
+           if (cn != null) {
+                try {
+                } catch (Exception ex) {
+                }
+
+            }
+        }
     }
+}
     
 

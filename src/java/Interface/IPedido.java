@@ -12,4 +12,5 @@ import Model.Pedido;
  */
 public interface IPedido {
     public int generarPedido(Pedido pedidos);
+    public boolean actualizarEstado(int idPedido, String nuevoEstado); 
 }
