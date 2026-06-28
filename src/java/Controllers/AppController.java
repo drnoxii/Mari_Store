@@ -280,17 +280,11 @@ public class AppController extends HttpServlet {
 
                     Pedido pedido = new Pedido();
 
-                    /*
-                     Tu PedidoDaoImpl usa:
-                     pedidos.getUsuario().getIdUsuario()
-                     */
+                    
                     pedido.setUsuario(user);
                     pedido.setTotal(totalPagar);
 
-                    /*
-                     El pedido nace como PENDIENTE.
-                     El admin luego lo cambia a PROCESADO si verifica el pago.
-                     */
+                    
                     pedido.setEstadopedido(EstadoPedido.PENDIENTE);
                     pedido.setDetallePedido(listCarrito);
 
@@ -341,92 +335,7 @@ public class AppController extends HttpServlet {
                     out.print(jsonResponse.toString());
                     break;
                 }
-                case "listarPagosPendientes": {
-                    try {
-                        System.out.println("ENTRÓ A LISTAR PAGOS PENDIENTES");
-
-                        List<Pago> pagosPendientes = pagoDao.listarPendientes();
-
-                        System.out.println("Cantidad pagos pendientes: " + pagosPendientes.size());
-
-                        JsonArray data = new JsonArray();
-
-                        for (Pago p : pagosPendientes) {
-                            JsonObject item = new JsonObject();
-
-                            item.addProperty("idPago", p.getIdPago());
-
-                            if (p.getPedido() != null) {
-                                item.addProperty("idPedido", p.getPedido().getIdPedido());
-                                item.addProperty("totalPedido", p.getPedido().getTotal());
-                            } else {
-                                item.addProperty("idPedido", 0);
-                                item.addProperty("totalPedido", 0);
-                            }
-
-                            item.addProperty("metodoPago", p.getMetodopago() != null ? p.getMetodopago().name() : "");
-                            item.addProperty("monto", p.getMonto());
-                            item.addProperty("comprobante", p.getComprobante());
-
-                            data.add(item);
-                        }
-
-                        JsonObject respuesta = new JsonObject();
-                        respuesta.addProperty("success", true);
-                        respuesta.addProperty("cantidad", pagosPendientes.size());
-                        respuesta.add("data", data);
-
-                        System.out.println("RESPUESTA POSTMAN: " + respuesta.toString());
-
-                        out.print(respuesta.toString());
-                        out.flush();
-                        return;
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-
-                        JsonObject error = new JsonObject();
-                        error.addProperty("success", false);
-                        error.addProperty("message", "Error en listarPagosPendientes: " + e.getMessage());
-
-                        out.print(error.toString());
-                        out.flush();
-                        return;
-                    }
-                }
-                case "buscarPagoPorPedido": {
-                    int idPedido = Integer.parseInt(request.getParameter("idPedido"));
-
-                    Pago pago = pagoDao.buscarPorPedido(idPedido);
-
-                    if (pago != null) {
-                        out.print(gson.toJson(pago));
-                    } else {
-                        jsonResponse.addProperty("success", false);
-                        jsonResponse.addProperty("message", "No se encontró pago para ese pedido");
-                        out.print(jsonResponse.toString());
-                    }
-
-                    break;
-                }
-                case "aprobarPago": {
-                    int idPedido = Integer.parseInt(request.getParameter("idPedido"));
-
-                    /*
-                     Aprobar pago significa:
-                     pedido.estado: PENDIENTE → PROCESADO
-                     */
-                    boolean actualizado = IDao.actualizarEstado(idPedido, "PROCESADO");
-
-                    jsonResponse.addProperty("success", actualizado);
-                    jsonResponse.addProperty(
-                            "message",
-                            actualizado ? "Pago aprobado. Pedido procesado." : "No se pudo aprobar el pago"
-                    );
-
-                    out.print(jsonResponse.toString());
-                    break;
-                }
+                
                 default:
                     jsonResponse.addProperty("success", false);
                     jsonResponse.addProperty("messagge", "accion no encontrada");
