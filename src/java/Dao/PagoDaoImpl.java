@@ -66,10 +66,10 @@ public class PagoDaoImpl implements IPago {
                 cn.rollback();
                 return false;
             }
-
+            
             // inserta el pago
             query = "INSERT INTO pago (idpedido, metodo_pago, monto, comprobante) "
-                    + "VALUES (?, ?, ?, ?)";
+                     + "VALUES (?, ?, ?, ?)";
 
             st = cn.prepareStatement(query);
             st.setInt(1, pago.getPedido().getIdPedido());
@@ -116,7 +116,7 @@ public class PagoDaoImpl implements IPago {
             cn = ConexionSingleton.getConnection();
 
             query = "SELECT idpago, idpedido, metodo_pago, monto, comprobante "
-                    + "FROM pago WHERE idpedido = ?";
+            + "FROM pago WHERE idpedido = ?";
 
             st = cn.prepareStatement(query);
             st.setInt(1, idPedido);
@@ -154,50 +154,50 @@ public class PagoDaoImpl implements IPago {
         return pago;
     }
 
-    @Override
-    public List<Pago> listarPendientes() {
-        List<Pago> lista = new ArrayList<>();
-        String query = null;
+@Override
+public List<Pago> listarPendientes() {
+    List<Pago> lista = new ArrayList<>();
+    String query = null;
 
-        try {
-            cn = ConexionSingleton.getConnection();
+    try {
+        cn = ConexionSingleton.getConnection();
 
-            query = "SELECT p.idPedido, p.total, p.estado, "
-                    + "pa.idPago, pa.metodo_pago, pa.monto, pa.comprobante "
-                    + "FROM pedido p "
-                    + "INNER JOIN pago pa ON p.idPedido = pa.idPedido "
-                    + "WHERE p.estado = 'PENDIENTE'";
+        query = "SELECT p.idPedido AS pedido_id, "
+                + "p.total AS total_pedido, "
+                + "p.estado AS estado_pedido, "
+                + "pa.idPago AS pago_id, "
+                + "pa.metodo_pago AS metodo_pago, "
+                + "pa.monto AS monto_pago, "
+                + "pa.comprobante AS comprobante "
+                + "FROM pedido p "
+                + "INNER JOIN pago pa ON p.idPedido = pa.idPedido "
+                + "WHERE UPPER(TRIM(p.estado)) = 'PENDIENTE'";
 
-            st = cn.prepareStatement(query);
-            rs = st.executeQuery();
+        st = cn.prepareStatement(query);
+        rs = st.executeQuery();
 
-            while (rs.next()) {
-                Pago pago = new Pago();
+        while (rs.next()) {
+            Pago pago = new Pago();
 
-                Pedido pedido = new Pedido();
-                pedido.setIdPedido(rs.getInt("idPedido"));
-                pedido.setTotal(rs.getDouble("total"));
+            Pedido pedido = new Pedido();
+            pedido.setIdPedido(rs.getInt("pedido_id"));
+            pedido.setTotal(rs.getDouble("total_pedido"));
 
-                pago.setIdPago(rs.getInt("idPago"));
-                pago.setPedido(pedido);
-                pago.setMetodopago(MetodoPago.valueOf(rs.getString("metodo_pago").toUpperCase()));
-                pago.setMonto(rs.getDouble("monto"));
-                pago.setComprobante(rs.getString("comprobante"));
-                lista.add(pago);
-            }
+            pago.setIdPago(rs.getInt("pago_id"));
+            pago.setPedido(pedido);
+            pago.setMetodopago(MetodoPago.valueOf(rs.getString("metodo_pago").trim().toUpperCase()));
+            pago.setMonto(rs.getDouble("monto_pago"));
+            pago.setComprobante(rs.getString("comprobante"));
 
-        } catch (Exception e) {
-            System.out.println("error al listar pendientes" + e.getMessage());
-
-        } finally {
-            if (cn != null) {
-                try {
-                } catch (Exception ex) {
-                }
-
-            }
+            lista.add(pago);
         }
-        return lista;
 
+    } catch (Exception e) {
+        System.out.println("error al listar pendientes: " + e.getMessage());
+        e.printStackTrace();
     }
+
+    return lista;
 }
+}
+
