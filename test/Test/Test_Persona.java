@@ -29,12 +29,12 @@ public class Test_Persona {
     public static void main(String[] args) {
        
         Test_Persona t = new Test_Persona(); 
-       // t.insert();
+        t.insert();
        // t.valid_user();
        //t.testLista();
        // t.testUpdate();
        // t.testSearchById();
-       t.testDelete();
+     //  t.testDelete();
     }
     
     public void insert(){
@@ -43,11 +43,11 @@ public class Test_Persona {
         p.setNombre("Josias David");
         p.setApellidos("Conislla Panayfo");
         p.setTelefono(987654321);
-        p.setDNI(80808808);
+        p.setDNI(80529222);
         p.setFecha_nacimiento(LocalDate.MIN);
         
         Usuario u = new Usuario();
-        u.setEmail("spider@gmail.com");
+        u.setEmail("jd@gmail.com");
         u.setContraseña("admin123");
         u.setRol(Rol.ADMIN);
         int result = dao.insert(p, u);
@@ -148,7 +148,7 @@ public class Test_Persona {
             return;
         }
 
-        boolean eliminado = dao.delete(3);
+        boolean eliminado = dao.delete(8);
 
         if (eliminado) {
             System.out.println("DELETE OK");

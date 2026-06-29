@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
+-->
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Mi Carrito</title>
+        
+      <div id="head-placeholder"></div>
+    </head>
+    
+    <body>
+        <header id="header-placeholder"></header>
+        <main class="container mt-5">
+            <<h2 class="fw-bold text-secondary mb-4">
+                <i class="bi bi-cart-check mc-2">Mi Carrito</i></h2>
+            <div class="row">
+                <!<!-- Tabla de Productos -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body p-0">
+                            <table id="tabla-carrito" class="table table-hover align-middle mb-0">
+                                <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Producto</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th>Subtotal</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- se llena con el js -->
+                                </tbody>
+                            </table>
+                            
+                        </div>
+                        
+                    </div>
+                            <a href="index.html" class="btn btn-outline-info">
+                                <i class="bi bi-arrow-left me-2">Seguir Comprando</i>
+                    
+                    </a>
+                </div>  
+                <!-- Resumen de la venta  -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-4">Resumen del Pedido</h5>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Subtotal</span>
+                                <span id="resumen-subtotal">$0.00</span>
+                                
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Envio</span>
+                                <span class="text-success">Gratis</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span class="fw-bold fs-5">Total</span>  
+                                <span class="fw-bold fs-5 text-info" id="resumen-total">$0.00</span>
+                            </div>
+                            <button onclick="procesarCompra()" class="btn btn-info text-white w-100 fw-bold py-2">
+                                Finalizar Compra
+                                
+                            </button>
+                        </div>  
+                    </div>
+                </div>
+                
+            </div>
+            
+        </main>
+        
+        <footer id="footer-placeholder"></footer>
+        <script src="assets/js/main.js"></script>
+    </body>
+</html>

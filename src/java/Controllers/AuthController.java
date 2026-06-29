@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
 package Controllers;
 
 import Dao.PersonaDaoImpl;
@@ -10,6 +6,7 @@ import Interface.IPersona;
 import Interface.IUsuario;
 import Model.Persona;
 import Model.Usuario;
+import Model.Rol; // Si te da error, cambia Rol.CLIENTE por Usuario.Rol.CLIENTE
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.io.IOException;
@@ -20,160 +17,252 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.HashSet;
-import java.util.Set;
 
-/**
- *
- * @author spide
- */
 @WebServlet(name = "AuthController", urlPatterns = {"/AuthController"})
 public class AuthController extends HttpServlet {
 
     private final IUsuario uDao = new UsuarioDaoImpl();
     private final IPersona pDao = new PersonaDaoImpl();
 
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet AuthController</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet AuthController at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        responderError(response, 405, "Método GET no permitido");
     }
 
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        response.setContentType("application/json");
+        response.setContentType("application/json;charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        //forma de recoger datos de las vista
         String action = request.getParameter("action");
-        JsonObject jsonResponse = new JsonObject();
-
-        Gson gson = new Gson();
 
         try (PrintWriter out = response.getWriter()) {
-            if (action.equals("validar")) {
 
-                String user = request.getParameter("email");
-                String pasw = request.getParameter("contraseña");
+            if (action == null || action.trim().isEmpty()) {
+                JsonObject json = new JsonObject();
+                json.addProperty("success", false);
+                json.addProperty("message", "Acción no enviada");
+                out.print(json.toString());
+                return;
+            }
 
-                Usuario us = uDao.validate(user, pasw);
+            switch (action) {
 
-                if (us != null && us.getEmail() != null) {
+                case "validar":
+                    validarLogin(request, out);
+                    break;
 
-                    HttpSession session = request.getSession();
-                    session.setAttribute("usuario", us);
+                case "register":
+                    registrarCliente(request, out);
+                    break;
 
-                    JsonObject userData = new JsonObject();
-                    userData.addProperty("idUsuario", us.getIdUsuario());
-                    userData.addProperty("email", us.getEmail());
-                    userData.addProperty("rol", us.getRol().toString());
+                case "registerAdmin":
+                    registrarAdmin(request, out);
+                    break;
 
-                    if (us.getPersona() != null) {
-                        userData.addProperty(
-                                "nombre",
-                                us.getPersona().getNombre()
-                        );
-                    }
+                case "Salir":
+                    cerrarSesion(request, out);
+                    break;
 
-                    
-                    jsonResponse.add("userData", userData);
-
-                } else {
-
-                    jsonResponse.addProperty("sucess", false);
-                    jsonResponse.addProperty("message",
-                            "Correo o Contraseña incorrecta");
-                }
-
-                out.print(jsonResponse.toString());
-            } else if (action.equals("register")) {
-                Persona p = new Persona();
-                Usuario u = new Usuario();
-                u.setEmail(request.getParameter("email"));
-                p.setNombre(request.getParameter("nombre"));
-                p.setApellidos(request.getParameter("apellidos"));
-                p.setDNI(Integer.parseInt(request.getParameter("DNI")));
-                p.setTelefono(Integer.parseInt(request.getParameter("telefono")));
-                u.setContraseña(request.getParameter("contraseña"));
-
-                int resultado = pDao.insert(p, u);
-
-                jsonResponse.addProperty("sucess", resultado != 0);
-                jsonResponse.addProperty("message", resultado != 0 ? "Registro Correcto" : "Error de Registro");
-                out.print(jsonResponse.toString());
-
-            } else if (action.equals("Salir")) {
-                HttpSession session = request.getSession(false);
-                if (session != null) {
-                    session.invalidate();
-                }
-
-                jsonResponse.addProperty("sucess", true);
-                jsonResponse.addProperty("message", "Sesion Cerrada");
-                out.print(jsonResponse.toString());
+                default:
+                    JsonObject json = new JsonObject();
+                    json.addProperty("success", false);
+                    json.addProperty("message", "Acción no encontrada");
+                    out.print(json.toString());
+                    break;
             }
 
         } catch (Exception e) {
-            response.setStatus(500);
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("message", "Error" + e.getMessage());
-            response.getWriter().print(jsonResponse.toString());
+            responderError(response, 500, "Error: " + e.getMessage());
         }
     }
 
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
+    private void validarLogin(HttpServletRequest request, PrintWriter out) {
+        JsonObject jsonResponse = new JsonObject();
+
+        String email = request.getParameter("email");
+
+        /*
+         * Acepta ambos nombres:
+         * - contraseña
+         * - password
+         * Así no se rompe si tu formulario usa uno u otro.
+         */
+        String contraseña = request.getParameter("contraseña");
+
+        if (contraseña == null || contraseña.trim().isEmpty()) {
+            contraseña = request.getParameter("password");
+        }
+
+        Usuario us = uDao.validate(email, contraseña);
+
+        if (us != null && us.getEmail() != null) {
+
+            HttpSession session = request.getSession();
+            session.setAttribute("usuario", us);
+
+            JsonObject userData = new JsonObject();
+            userData.addProperty("idUsuario", us.getIdUsuario());
+            userData.addProperty("email", us.getEmail());
+
+            if (us.getRol() != null) {
+                userData.addProperty("rol", us.getRol().toString());
+            } else {
+                userData.addProperty("rol", "CLIENTE");
+            }
+
+            /*
+             * Te mando el nombre de las dos formas:
+             * 1. userData.nombre
+             * 2. userData.persona.nombre
+             *
+             * Así funciona aunque tu JS use cualquiera de las dos.
+             */
+            if (us.getPersona() != null) {
+                userData.addProperty("nombre", us.getPersona().getNombre());
+
+                JsonObject personaJson = new JsonObject();
+                personaJson.addProperty("idPersona", us.getPersona().getIdPersona());
+                personaJson.addProperty("nombre", us.getPersona().getNombre());
+                personaJson.addProperty("apellidos", us.getPersona().getApellidos());
+
+                userData.add("persona", personaJson);
+            }
+
+            jsonResponse.addProperty("success", true);
+            jsonResponse.addProperty("message", "Login correcto");
+            jsonResponse.add("userData", userData);
+
+        } else {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Correo o contraseña incorrecta");
+        }
+
+        out.print(jsonResponse.toString());
+    }
+
+    private void registrarCliente(HttpServletRequest request, PrintWriter out) {
+        JsonObject jsonResponse = new JsonObject();
+
+        Persona p = new Persona();
+        Usuario u = new Usuario();
+
+        u.setEmail(request.getParameter("email"));
+
+        p.setNombre(request.getParameter("nombre"));
+        p.setApellidos(request.getParameter("apellidos"));
+        p.setDNI(Integer.parseInt(request.getParameter("DNI")));
+        p.setTelefono(Integer.parseInt(request.getParameter("telefono")));
+
+        String contraseña = request.getParameter("contraseña");
+
+        if (contraseña == null || contraseña.trim().isEmpty()) {
+            contraseña = request.getParameter("password");
+        }
+
+        u.setContraseña(contraseña);
+
+        /*
+         * Registro público siempre CLIENTE.
+         * No dejes que el usuario elija ADMIN desde el formulario normal.
+         */
+        u.setRol(Rol.CLIENTE);
+
+        int resultado = pDao.insert(p, u);
+
+        jsonResponse.addProperty("success", resultado != 0);
+        jsonResponse.addProperty(
+                "message",
+                resultado != 0 ? "Registro correcto" : "Error de registro"
+        );
+
+        out.print(jsonResponse.toString());
+    }
+
+    private void registrarAdmin(HttpServletRequest request, PrintWriter out) {
+        JsonObject jsonResponse = new JsonObject();
+
+        HttpSession session = request.getSession(false);
+
+        if (session == null || session.getAttribute("usuario") == null) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "Debes iniciar sesión como administrador");
+            out.print(jsonResponse.toString());
+            return;
+        }
+
+        Usuario usuarioSesion = (Usuario) session.getAttribute("usuario");
+
+        if (usuarioSesion.getRol() == null || !usuarioSesion.getRol().toString().equals("ADMIN")) {
+            jsonResponse.addProperty("success", false);
+            jsonResponse.addProperty("message", "No tienes permiso para crear administradores");
+            out.print(jsonResponse.toString());
+            return;
+        }
+
+        Persona p = new Persona();
+        Usuario u = new Usuario();
+
+        u.setEmail(request.getParameter("email"));
+
+        p.setNombre(request.getParameter("nombre"));
+        p.setApellidos(request.getParameter("apellidos"));
+        p.setDNI(Integer.parseInt(request.getParameter("DNI")));
+        p.setTelefono(Integer.parseInt(request.getParameter("telefono")));
+
+        String contraseña = request.getParameter("contraseña");
+
+        if (contraseña == null || contraseña.trim().isEmpty()) {
+            contraseña = request.getParameter("password");
+        }
+
+        u.setContraseña(contraseña);
+        u.setRol(Rol.ADMIN);
+
+        int resultado = pDao.insert(p, u);
+
+        jsonResponse.addProperty("success", resultado != 0);
+        jsonResponse.addProperty(
+                "message",
+                resultado != 0 ? "Administrador registrado correctamente" : "Error al registrar administrador"
+        );
+
+        out.print(jsonResponse.toString());
+    }
+
+    private void cerrarSesion(HttpServletRequest request, PrintWriter out) {
+        JsonObject jsonResponse = new JsonObject();
+
+        HttpSession session = request.getSession(false);
+
+        if (session != null) {
+            session.invalidate();
+        }
+
+        jsonResponse.addProperty("success", true);
+        jsonResponse.addProperty("message", "Sesión cerrada");
+
+        out.print(jsonResponse.toString());
+    }
+
+    private void responderError(HttpServletResponse response, int status, String mensaje)
+            throws IOException {
+
+        response.setStatus(status);
+        response.setContentType("application/json;charset=UTF-8");
+
+        JsonObject json = new JsonObject();
+        json.addProperty("success", false);
+        json.addProperty("message", mensaje);
+
+        response.getWriter().print(json.toString());
+    }
+
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+        return "AuthController";
+    }
 }

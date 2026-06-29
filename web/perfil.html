@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil</title>
+    <div id="head-placeholder"></div>
+</head>
+<body>
+
+<header id="header-placeholder"></header>
+
+<main class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-secondary">
+            <i class="bi bi-person-circle me-2"></i> Mi Perfil
+        </h2>
+
+        <a href="index.html" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i> Volver
+        </a>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">
+                <i class="bi bi-info-circle me-2"></i> Datos del usuario
+            </h5>
+        </div>
+
+        <div class="card-body p-4">
+            <div id="perfil-loading" class="text-center text-muted">
+                Cargando datos del perfil...
+            </div>
+
+            <div id="perfil-contenido" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-secondary">Nombre</label>
+                        <p id="perfil-nombre" class="form-control bg-light"></p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="fw-bold text-secondary">Apellidos</label>
+                        <p id="perfil-apellidos" class="form-control bg-light"></p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-secondary">DNI</label>
+                        <p id="perfil-dni" class="form-control bg-light"></p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="fw-bold text-secondary">Teléfono</label>
+                        <p id="perfil-telefono" class="form-control bg-light"></p>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-secondary">Fecha de nacimiento</label>
+                        <p id="perfil-fecha" class="form-control bg-light"></p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="fw-bold text-secondary">Correo electrónico</label>
+                        <p id="perfil-email" class="form-control bg-light"></p>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="fw-bold text-secondary">Rol</label>
+                        <p id="perfil-rol" class="form-control bg-light"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="perfil-error" class="alert alert-danger d-none">
+                No se pudieron cargar los datos del perfil.
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer id="footer-placeholder"></footer>
+
+<script src="assets/js/main.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    cargarPerfil();
+});
+
+function cargarPerfil() {
+    fetch("/Mari_Store/AppController?action=perfilUsuario")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Perfil:", data);
+
+            if (!data.success) {
+                mostrarErrorPerfil();
+                return;
+            }
+
+            const usuario = data.usuario;
+
+            document.getElementById("perfil-nombre").textContent = usuario.nombre || "";
+            document.getElementById("perfil-apellidos").textContent = usuario.apellidos || "";
+            document.getElementById("perfil-dni").textContent = usuario.dni || "";
+            document.getElementById("perfil-telefono").textContent = usuario.telefono || "";
+            document.getElementById("perfil-fecha").textContent = usuario.fechaNacimiento || "";
+            document.getElementById("perfil-email").textContent = usuario.email || "";
+            document.getElementById("perfil-rol").textContent = usuario.rol || "";
+
+            document.getElementById("perfil-loading").style.display = "none";
+            document.getElementById("perfil-contenido").style.display = "block";
+        })
+        .catch(error => {
+            console.error("Error al cargar perfil:", error);
+            mostrarErrorPerfil();
+        });
+}
+
+function mostrarErrorPerfil() {
+    document.getElementById("perfil-loading").style.display = "none";
+    document.getElementById("perfil-contenido").style.display = "none";
+    document.getElementById("perfil-error").classList.remove("d-none");
+}
+</script>
+
+</body>
+</html>

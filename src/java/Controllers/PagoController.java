@@ -5,6 +5,7 @@ import Dao.PedidoDaoImpl;
 import Interface.IPago;
 import Interface.IPedido;
 import Model.Pago;
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import java.io.IOException;
@@ -21,6 +22,7 @@ public class PagoController extends HttpServlet {
 
     private IPago pagoDao = new PagoDaoImpl();
     private IPedido pedidoDao = new PedidoDaoImpl();
+    private Gson gson = new Gson();
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
