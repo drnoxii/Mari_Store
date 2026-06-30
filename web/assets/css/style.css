@@ -65,7 +65,7 @@ main {
 }
 
 .logo-text {
-    color: #3498db;
+    color:  #12191C;
     font-size: 24px;
     font-weight: bold;
 }
@@ -565,4 +565,41 @@ main {
     .acciones-header .dropdown button {
         width: 100%;
     }
+}
+
+/* Tabs de categorías */
+#tabs-categorias {
+    border-bottom: 2px solid #dee2e6;
+}
+
+#tabs-categorias .nav-link {
+    color: #212529 !important; /* negro suave */
+    background-color: #ffffff !important;
+    border: 1px solid #dee2e6 !important;
+    margin-right: 6px;
+    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+/* Hover azulado claro */
+#tabs-categorias .nav-link:hover {
+    color: #087990 !important; 
+    background-color: #e7faff !important; /* celeste muy claro */
+    border-color: #0dcaf0 !important;
+}
+
+/* Tab activo */
+#tabs-categorias .nav-link.active {
+    color: #ffffff;
+    background-color: #212529; /* negro suave */
+    border-color: #212529;
+}
+#tabs-categorias .nav-link.active {
+    color: #ffffff;
+    background-color: #0dcaf0;
+    border-color: #0dcaf0;
+}
+span {
+    color: #12191C ;
 }

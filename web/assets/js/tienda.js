@@ -136,52 +136,106 @@ function cargarProductos() {
                     const precio = Number(p.precio) || 0;
                     const botonDeshabilitado = stockTotal <= 0 ? "disabled" : "";
 
+                    const idCategoria =
+                            p.categoria?.idCategoria ||
+                            p.categoria?.idcategoria ||
+                            p.idCategoria ||
+                            p.idcategoria ||
+                            p.id_categoria ||
+                            "";
+
                     contenedor.append(`
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div class="card h-100 shadow-sm border-0">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 producto" data-categoria="${idCategoria}">
+                        <div class="card h-100 shadow-sm border-0">
 
-                                <img src="${p.imagen}" 
-                                     alt="${p.nombre}" 
-                                     class="card-img-top p-2 img-product"/>
+                            <img src="${p.imagen}" 
+                                 alt="${p.nombre}" 
+                                 class="card-img-top p-2 img-product"/>
 
-                                <div class="card-body d-flex flex-column">
+                            <div class="card-body d-flex flex-column">
 
-                                    <h6 class="card-title fw-bold">${p.nombre}</h6>
+                                <h6 class="card-title fw-bold">${p.nombre}</h6>
 
-                                    <p class="card-text text-muted small flex-grow-1">
-                                        ${p.descripcion || ""}
-                                    </p>
+                                <p class="card-text text-muted small flex-grow-1">
+                                    ${p.descripcion || ""}
+                                </p>
 
-                                    <div class="mt-2">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <span class="fs-5 fw-bold text-info">
-                                                ${formatearPrecio(precio)}
-                                            </span>
+                                <div class="mt-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="fs-5 fw-bold text-info">
+                                            ${formatearPrecio(precio)}
+                                        </span>
 
-                                            <span class="badge ${claseStock(stockTotal)}">
-                                                ${textoStock(stockTotal)}
-                                            </span>
-                                        </div>
-
-                                        ${renderSelectVariantes(p, idProducto)}
+                                        <span class="badge ${claseStock(stockTotal)}">
+                                            ${textoStock(stockTotal)}
+                                        </span>
                                     </div>
 
-                                    <button onclick="agregarCarrito(${idProducto})"
-                                            class="btn btn-info text-white w-100 mt-3"
-                                            ${botonDeshabilitado}>
-                                        <i class="bi bi-cart-plus me-2"></i>
-                                        Agregar
-                                    </button>
-
+                                    ${renderSelectVariantes(p, idProducto)}
                                 </div>
+
+                                <button onclick="agregarCarrito(${idProducto})"
+                                        class="btn btn-info text-white w-100 mt-3"
+                                        ${botonDeshabilitado}>
+                                    <i class="bi bi-cart-plus me-2"></i>
+                                    Agregar
+                                </button>
+
                             </div>
                         </div>
-                    `);
+                    </div>
+                `);
                 });
+
+                const params = new URLSearchParams(window.location.search);
+                const categoriaURL = params.get("categoria");
+
+                if (categoriaURL) {
+                    const tab = document.querySelector(`#tabs-categorias .nav-link[data-categoria="${categoriaURL}"]`);
+
+                    if (tab) {
+                        document.querySelectorAll("#tabs-categorias .nav-link").forEach(l => l.classList.remove("active"));
+                        tab.classList.add("active");
+                    }
+
+                    filtrarProductosPorCategoria(categoriaURL);
+                }
             })
             .catch(err => console.log("Error al cargar productos", err));
 }
 
+
+function inicializarFiltroCategorias() {
+    const tabs = document.querySelectorAll("#tabs-categorias .nav-link");
+
+    if (tabs.length === 0) {
+        return;
+    }
+
+    tabs.forEach(link => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            tabs.forEach(l => l.classList.remove("active"));
+            this.classList.add("active");
+
+            const categoria = this.dataset.categoria;
+            filtrarProductosPorCategoria(categoria);
+        });
+    });
+}
+
+function filtrarProductosPorCategoria(categoria) {
+    document.querySelectorAll("#lista-productos .producto").forEach(producto => {
+        const categoriaProducto = producto.dataset.categoria;
+
+        if (categoria === "todos" || categoriaProducto === categoria) {
+            producto.style.display = "block";
+        } else {
+            producto.style.display = "none";
+        }
+    });
+}
 
 /* CARRITO */
 
@@ -389,9 +443,9 @@ function logout() {
             });
 }
 
-/* ========================= */
+
 /* LOGIN Y REGISTRO */
-/* ========================= */
+
 
 function inicializarEventosAuth() {
     $(document).off('submit', '#form-login');
@@ -458,9 +512,8 @@ function inicializarEventosAuth() {
     });
 }
 
-/* ========================= */
 /* PROCESAR COMPRA */
-/* ========================= */
+
 
 function procesarCompra() {
     const cantidadProductos = parseInt($('#cart-count').text()) || 0;
@@ -793,9 +846,9 @@ function cargarProductosAdmin() {
                 console.log("Error al cargar productos admin", err);
             });
 }
-/* ========================= */
+
 /* MODAL PRODUCTO */
-/* ========================= */
+
 
 function abrirModalNuevo() {
     document.getElementById("tituloModal").textContent = "Nuevo Producto";
@@ -887,9 +940,9 @@ function llenarVariantesProducto(producto) {
         agregarVariante();
     }
 }
-/* ========================= */
+
 /* EDITAR PRODUCTO */
-/* ========================= */
+
 
 function editarProducto(id) {
     fetch(`ProductoController?action=buscar&id=${id}`)
@@ -950,9 +1003,9 @@ function abrirModalEditar(idProducto) {
                 alert("No se pudo cargar el producto");
             });
 }
-/* ========================= */
+
 /* ELIMINAR PRODUCTO */
-/* ========================= */
+
 
 function eliminarProducto(id) {
     Swal.fire({

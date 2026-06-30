@@ -59,6 +59,8 @@ async function init() {
                 cargarProductos();
             if (typeof cargarProductosAdmin() === 'function')
                 cargarProductosAdmin();
+            if (typeof inicializarFiltroCategorias() === 'function')
+                inicializarFiltroCategorias();
             
         }, 200);
 

@@ -1,136 +1,137 @@
 <!DOCTYPE html>
 <html lang="es">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Mari_Store</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>Mari_Store</title>
     <div id="head-placeholder"></div>
 </head>
 
 <body>
     <header id="header-placeholder">
     </header>
-       <main>
+    <main>
         <section id="bienvenida">
-            <h1>Quienes Somos</h1>
+            <h1>Promociones</h1>
         </section>
         <div id="carouselExampleIndicators" class="carousel slide">
 
             <div class="carousel-indicators">
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
-                    class="active"></button>
+                        class="active"></button>
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"></button>
                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"></button>
             </div>
 
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="https://wallpaperaccess.com/full/10675.jpg" class="d-block w-100">
+                    <img src="assets/img/promociones/promo_hombre.png" class="d-block w-100">
                 </div>
 
                 <div class="carousel-item">
-                    <img src="https://4kwallpapers.com/images/walls/thumbs_2t/20257.jpg" class="d-block w-100">
+                    <img src="assets/img/promociones/promo_mujer.png" class="d-block w-100">
                 </div>
 
                 <div class="carousel-item">
                     <img src="https://fantasyandanime.wordpress.com/wp-content/uploads/2016/11/anime-bleach-wallpaper-hd.jpg?w=900"
-                        class="d-block w-100">
+                         class="d-block w-100">
                 </div>
             </div>
 
             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
-                data-bs-slide="prev">
+                    data-bs-slide="prev">
                 <span class="carousel-control-prev-icon"></span>
             </button>
 
             <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
-                data-bs-slide="next">
+                    data-bs-slide="next">
                 <span class="carousel-control-next-icon"></span>
             </button>
 
         </div>
 
-        <h2 class="productos-index">Nuestros Productos</h2>
-        <div class="container mt-5">
+        <h2 class="productos-index text-center mt-5 mb-4">Categorías</h2>
+
+        <div class="container mt-4">
             <div class="row">
 
-
+                <!-- CATEGORÍA 1 -->
                 <div class="col-6 col-md-3 mb-4">
-                    <div class="contenedor-productos">
-                        <article class="tarjeta-producto">
-                            <div class="card producto-card">
-                                <img class="img-product"
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpk_poinqfQ3yEiCX9GX5___g68dUwKWDsoQ&s">
-                                <div class="card-body">
-                                    <h5 class="card-title">Casaca Azul</h5>
-                                    <p class="talla">Talla M</p>
-                                    <p class="precio">S/ 180</p>
-                                    <button class="btn btn-primary w-100">Añadir al carrito</button>
-                                </div>
-                            </div>
-                        </article>
+                    <div class="card producto-card h-100 shadow-sm border-0">
+                        <img class="img-product"
+                             src="https://yansus.com/cdn/shop/products/polonegrocorazon2.png?v=1681238171&width=1946"
+                             alt="Polos">
+
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold">Polos</h5>
+                            <p class="text-muted small">Ver todos los polos disponibles</p>
+
+                            <a href="productos.html?categoria=1" class="btn btn-info text-white w-100">
+                                Ver categoría
+                            </a>
+                        </div>
                     </div>
                 </div>
 
+                <!-- CATEGORÍA 2 -->
                 <div class="col-6 col-md-3 mb-4">
-                    <div class="contenedor-productos">
-                        <article class="tarjeta-producto">
-                            <div class="card producto-card">
-                                <img class="img-product"
-                                    src="https://yansus.com/cdn/shop/products/polonegrocorazon2.png?v=1681238171&width=1946">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Polo Negro</h5>
-                                    <p class="talla">Talla L</p>
-                                    <p class="precio">S/ 50</p>
-                                    <button class="btn btn-primary w-100">Añadir al carrito</button>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
+                    <div class="card producto-card h-100 shadow-sm border-0">
+                        <img class="img-product"
+                             src="https://dojiw2m9tvv09.cloudfront.net/26332/product/4818746.png"
+                             alt="Pantalones">
 
-                </div>
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold">Pantalones</h5>
+                            <p class="text-muted small">Jeans, joggers y más</p>
 
-                <!-- PRODUCTO 3 -->
-                <div class="col-6 col-md-3 mb-4">
-                    <div class="contenedor-productos">
-                        <article class="tarjeta-producto">
-                            <div class="card producto-card">
-                                <img class="img-product"
-                                    src="https://dojiw2m9tvv09.cloudfront.net/26332/product/4818746.png">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Jean</h5>
-                                    <p class="talla">Talla 32</p>
-                                    <p class="precio">S/ 120</p>
-                                    <button class="btn btn-primary w-100">Añadir al carrito</button>
-                                </div>
-                            </div>
-                        </article>
+                            <a href="productos.html?categoria=2" class="btn btn-info text-white w-100">
+                                Ver categoría
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-            <!-- PRODUCTO 4 -->
-         <div class="col-6 col-md-3 mb-4">
-          <div class="contenedor-productos">
-            <article class="tarjeta-producto">
-             <div class="card producto-card">
-         <img class="img-product"
-                                src="https://www.cleanlab.pe/cdn/shop/files/pasadores-premium-accesorios-zapatillas-909528_9686399f-a19f-43d9-a9ec-67056e63d5d3.webp?v=1747945657&width=1445">
-                                <div class="card-body text-center">
-                                    <h5 class="card-title">Zapatillas</h5>
-                                    <p class="talla">Talla 42</p>
-                                    <p class="precio">S/ 150</p>
-                                    <button class="btn btn-primary w-100">Añadir al carrito</button>
+                <!-- CATEGORÍA 3 -->
+                <div class="col-6 col-md-3 mb-4">
+                    <div class="card producto-card h-100 shadow-sm border-0">
+                        <img class="img-product"
+                             src="https://www.cleanlab.pe/cdn/shop/files/pasadores-premium-accesorios-zapatillas-909528_9686399f-a19f-43d9-a9ec-67056e63d5d3.webp?v=1747945657&width=1445"
+                             alt="Zapatillas">
+
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold">Zapatillas</h5>
+                            <p class="text-muted small">Modelos urbanos y casuales</p>
+
+                            <a href="productos.html?categoria=3" class="btn btn-info text-white w-100">
+                                Ver categoría
+                            </a>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- CATEGORÍA 4 -->
+                <div class="col-6 col-md-3 mb-4">
+                    <div class="card producto-card h-100 shadow-sm border-0">
+                        <img class="img-product"
+                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSpk_poinqfQ3yEiCX9GX5___g68dUwKWDsoQ&s"
+                             alt="Casacas">
+
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold">Casacas</h5>
+                            <p class="text-muted small">Casacas para toda ocasión</p>
+
+                            <a href="productos.html?categoria=4" class="btn btn-info text-white w-100">
+                                Ver categoría
+                            </a>
+                        </div>
+                    </div>
                 </div>
-             </article>
+
             </div>
-          </div>
-
-         </div>
         </div>
     </main>
-    <<footer id="footer-placeholder">
-        
+    <footer id="footer-placeholder">
+
     </footer>
     <script src="assets/js/main.js"></script>
 </body>

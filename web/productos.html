@@ -13,10 +13,36 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
 <body>
     <header id="header-placeholder"></header>
     <main>
-            <section class="container mt-5 mb-5">
+        <section class="container mt-5 mb-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="fw-bold text-secondary">Nuestros productos</h2>
                 <div class="badge bg-info text-white p-2">Explora lo nuevo</div>
+            </div>
+            <div>
+                <ul class="nav nav-tabs mb-4" id="tabs-categorias">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-categoria="todos">Todos</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-categoria="1">Polos</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-categoria="2">Pantalones</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-categoria="3">Zapatillas</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-categoria="4">Casacas</a>
+                    </li>
+                </ul>
+
+                
+
             </div>
             <div class="row g-4" id="lista-productos">
                 <div class="text-center py-5">
@@ -24,9 +50,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                     <p>Cargando catalogo de productos...</p>
                 </div>
             </div>
-            
-            
-            
+
+
+
         </section>
 
 
