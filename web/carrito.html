@@ -7,22 +7,22 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
     <head>
         <meta charset="UTF-8">
         <title>Mi Carrito</title>
-        
-      <div id="head-placeholder"></div>
-    </head>
-    
-    <body>
-        <header id="header-placeholder"></header>
-        <main class="container mt-5">
-            <<h2 class="fw-bold text-secondary mb-4">
-                <i class="bi bi-cart-check mc-2">Mi Carrito</i></h2>
-            <div class="row">
-                <!<!-- Tabla de Productos -->
-                <div class="col-lg-8">
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-body p-0">
-                            <table id="tabla-carrito" class="table table-hover align-middle mb-0">
-                                <thead>
+
+    <div id="head-placeholder"></div>
+</head>
+
+<body>
+    <header id="header-placeholder"></header>
+    <main class="container mt-5">
+        <h2 class="fw-bold text-secondary mb-4">
+            <i class="bi bi-cart-check mc-2">Mi Carrito</i></h2>
+        <div class="row">
+            <!<!-- Tabla de Productos -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body p-0">
+                        <table id="tabla-carrito" class="table table-hover align-middle mb-0">
+                            <thead>
                                 <tr>
                                     <th>#</th>
                                     <th>Producto</th>
@@ -31,52 +31,117 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                                     <th>Subtotal</th>
                                     <th></th>
                                 </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- se llena con el js -->
-                                </tbody>
-                            </table>
-                            
-                        </div>
-                        
+                            </thead>
+                            <tbody>
+                                <!-- se llena con el js -->
+                            </tbody>
+                        </table>
+
                     </div>
-                            <a href="index.html" class="btn btn-outline-info">
-                                <i class="bi bi-arrow-left me-2">Seguir Comprando</i>
-                    
-                    </a>
-                </div>  
-                <!-- Resumen de la venta  -->
-                <div class="col-lg-4">
-                    <div class="card shadow-sm border-0">
-                        <div class="card-body">
-                            <h5 class="fw-bold mb-4">Resumen del Pedido</h5>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Subtotal</span>
-                                <span id="resumen-subtotal">$0.00</span>
-                                
-                            </div>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>Envio</span>
-                                <span class="text-success">Gratis</span>
-                            </div>
-                            <hr>
-                            <div class="d-flex justify-content-between mb-3">
-                                <span class="fw-bold fs-5">Total</span>  
-                                <span class="fw-bold fs-5 text-info" id="resumen-total">$0.00</span>
-                            </div>
-                            <button onclick="procesarCompra()" class="btn btn-info text-white w-100 fw-bold py-2">
-                                Finalizar Compra
-                                
-                            </button>
-                        </div>  
-                    </div>
+
                 </div>
-                
+                <a href="index.html" class="btn btn-outline-info">
+                    <i class="bi bi-arrow-left me-2">Seguir Comprando</i>
+
+                </a>
+            </div>  
+            <!-- Resumen de la venta  -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="fw-bold mb-4">Resumen del Pedido</h5>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Subtotal</span>
+                            <span id="resumen-subtotal">$0.00</span>
+
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Envio</span>
+                            <span class="text-success">Gratis</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="fw-bold fs-5">Total</span>  
+                            <span class="fw-bold fs-5 text-info" id="resumen-total">$0.00</span>
+                        </div>
+                        <button type="button" onclick="abrirModalPago()" class="btn btn-info text-white w-100 fw-bold py-2">
+                            Finalizar Compra
+                        </button>
+                    </div>  
+                </div>
             </div>
-            
-        </main>
-        
-        <footer id="footer-placeholder"></footer>
-        <script src="assets/js/main.js"></script>
-    </body>
+
+        </div>
+        <!-- Modal de Pago -->
+<div class="modal fade" id="modalPago" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-wallet2 me-2"></i> Finalizar Pago
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="form-pago" enctype="multipart/form-data">
+                <div class="modal-body">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Método de pago</label>
+                        <select name="metodo_pago" id="metodo_pago" class="form-select" required>
+                            <option value="">Seleccione método</option>
+                            <option value="YAPE">Yape</option>
+                            <option value="PLIN">Plin</option>
+                            <option value="TARJETA" disabled>Tarjeta - Próximamente</option>
+                        </select>
+                    </div>
+
+                    <div id="contenedor-qr" class="text-center mb-3 d-none">
+                        <p class="fw-bold text-secondary mb-2">Escanea este QR para pagar</p>
+
+                        <img id="imagen-qr"
+                             src=""
+                             alt="QR de pago"
+                             class="img-fluid border rounded p-2"
+                             style="max-width: 220px;">
+
+                        <p id="texto-metodo" class="text-muted mt-2 mb-0"></p>
+                    </div>
+
+                    <div class="alert alert-info small">
+                        Luego de pagar, sube la captura de tu operación. Tu pedido quedará pendiente de aprobación.
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Captura del comprobante</label>
+                        <input type="file"
+                               name="comprobante"
+                               id="comprobante"
+                               class="form-control"
+                               accept="image/*"
+                               required>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn btn-info text-white">
+                        Confirmar pago
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+    </main>
+
+    <footer id="footer-placeholder"></footer>
+    <script src="assets/js/main.js"></script>
+</body>
 </html>

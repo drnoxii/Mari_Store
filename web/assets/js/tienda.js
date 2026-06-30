@@ -1,13 +1,3 @@
-/* 
- * tienda.js
- * Lógica de productos, carrito, sesión, login, registro y admin.
- * Adaptado para manejar stock por variantes.
- */
-
-/* ========================= */
-/* HELPERS PARA PRODUCTOS */
-/* ========================= */
-
 function obtenerVariantes(p) {
     return p.variantes || p.detalles || p.detalleProductos || [];
 }
@@ -192,9 +182,8 @@ function cargarProductos() {
             .catch(err => console.log("Error al cargar productos", err));
 }
 
-/* ========================= */
+
 /* CARRITO */
-/* ========================= */
 
 function agregarCarrito(idProducto) {
     const idDetalle = obtenerIdDetalleSeleccionado(idProducto);
@@ -325,12 +314,9 @@ function actualizarContadorCarrito() {
             .catch(err => console.log("Error al actualizar contador", err));
 }
 
-/*
- * Ajusta el action si tu AppController usa otro nombre.
- * Por ejemplo: QuitarCarrito, EliminarCarrito, DeleteCarrito, etc.
- */
+
 function eliminarItemCarrito(idProducto, idDetalle) {
-    let url = `AppController?action=EliminarCarrito&id=${idProducto}`;
+    let url = `AppController?action=delete&id=${idProducto}`;
 
     if (idDetalle) {
         url += `&idDetalle=${idDetalle}`;
@@ -351,6 +337,8 @@ function eliminarItemCarrito(idProducto, idDetalle) {
                 Swal.fire("Error", "No se pudo eliminar el producto del carrito", "error");
             });
 }
+
+
 
 /* ========================= */
 /* SESIÓN */
@@ -414,7 +402,7 @@ function inicializarEventosAuth() {
 
         const datos = $(this).serialize();
 
-        fetch('AuthController?action=validar', {
+        fetch('/Mari_Store/AuthController?action=validar', {
             method: 'POST',
             body: new URLSearchParams(datos)
         })
@@ -438,20 +426,29 @@ function inicializarEventosAuth() {
 
         const datos = $(this).serialize();
 
-        fetch('AuthController?action=register', {
+        fetch('/Mari_Store/AuthController?action=register', {
             method: 'POST',
             body: new URLSearchParams(datos)
         })
                 .then(res => res.json())
                 .then(data => {
+                    console.log("Respuesta registro:", data);
+
                     if (data.success) {
-                        Swal.fire("¡Bienvenido!", "Registro exitoso", "success")
+                        Swal.fire("¡Bienvenido!", data.message || "Registro exitoso", "success")
                                 .then(() => {
-                                    $('#modalRegister').modal('hide');
-                                    $('#modalLogin').modal('show');
+                                    const modalRegister = bootstrap.Modal.getInstance(document.getElementById('modalRegister'));
+                                    if (modalRegister) {
+                                        modalRegister.hide();
+                                    }
+
+                                    const modalLogin = bootstrap.Modal.getOrCreateInstance(document.getElementById('modalLogin'));
+                                    modalLogin.show();
+
+                                    document.getElementById("form-register").reset();
                                 });
                     } else {
-                        Swal.fire("Error", data.message, "error");
+                        Swal.fire("Error", data.message || "No se pudo registrar", "error");
                     }
                 })
                 .catch(err => {
@@ -541,6 +538,46 @@ function procesarCompra() {
                     });
         }
     });
+}
+function finalizarCompra() {
+    const metodoPago = document.getElementById("metodo_pago").value;
+    const comprobante = document.getElementById("comprobante").value;
+
+    if (!metodoPago) {
+        Swal.fire("Aviso", "Seleccione un método de pago", "warning");
+        return;
+    }
+
+    if (!comprobante.trim()) {
+        Swal.fire("Aviso", "Ingrese el comprobante de pago", "warning");
+        return;
+    }
+
+    const datos = new URLSearchParams();
+    datos.append("metodo_pago", metodoPago);
+    datos.append("comprobante", comprobante);
+
+    fetch("/Mari_Store/AppController?action=generarcompra", {
+        method: "POST",
+        body: datos
+    })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Respuesta compra:", data);
+
+                if (data.success) {
+                    Swal.fire("Compra registrada", data.message, "success")
+                            .then(() => {
+                                window.location.href = "mis-compras.html";
+                            });
+                } else {
+                    Swal.fire("Error", data.message, "error");
+                }
+            })
+            .catch(err => {
+                console.error("Error al finalizar compra:", err);
+                Swal.fire("Error", "No se pudo finalizar la compra", "error");
+            });
 }
 
 /* ========================= */
@@ -638,9 +675,7 @@ function cargarTablaAdmin() {
 
                     return `
                         <div class="btn-group">
-                            <button class="btn btn-warning btn-sm" onclick="editarProducto(${idProducto})">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="abrirModalEditar(${idProducto})">
 
                             <button class="btn btn-danger btn-sm" onclick="eliminarProducto(${idProducto})">
                                 <i class="bi bi-trash"></i>
@@ -668,44 +703,190 @@ function cargarTablaAdmin() {
     });
 }
 
+
+function cargarProductosAdmin() {
+    const tbody = $('#tabla-productos tbody');
+
+    if (tbody.length === 0) {
+        return;
+    }
+
+    fetch('/Mari_Store/ProductoController?action=listar')
+            .then(res => res.json())
+            .then(productos => {
+                tbody.empty();
+
+                if (!productos || productos.length === 0) {
+                    tbody.append(`
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            No hay productos registrados
+                        </td>
+                    </tr>
+                `);
+                    return;
+                }
+
+                productos.forEach((p, index) => {
+                    const idProducto = obtenerIdProducto(p);
+                    const stockTotal = calcularStockTotal(p);
+                    const precio = Number(p.precio) || 0;
+
+                    let variantesHtml = "";
+
+                    if (p.variantes && p.variantes.length > 0) {
+                        p.variantes.forEach(v => {
+                            variantesHtml += `
+                            <span class="badge bg-light text-dark border me-1 mb-1">
+                                ${v.talla} / ${v.color}: ${v.stock}
+                            </span>
+                        `;
+                        });
+                    } else {
+                        variantesHtml = `<span class="text-muted small">Sin variantes</span>`;
+                    }
+
+                    tbody.append(`
+                    <tr>
+                        <td>${index + 1}</td>
+
+                        <td>
+                            <img src="${p.imagen}" 
+                                 width="60" 
+                                 height="60" 
+                                 style="object-fit: cover; border-radius: 8px;">
+                        </td>
+
+                        <td>
+                            <strong>${p.nombre}</strong>
+                            <br>
+                            <small class="text-muted">${p.descripcion || ""}</small>
+                            <div class="mt-2">
+                                ${variantesHtml}
+                            </div>
+                        </td>
+
+                        <td>${formatearPrecio(precio)}</td>
+
+                        <td>
+                            <span class="badge ${claseStock(stockTotal)}">
+                                ${textoStock(stockTotal)}
+                            </span>
+                        </td>
+
+                        <td>
+                            <button class="btn btn-warning btn-sm me-1"
+                                    onclick="abrirModalEditar(${idProducto})">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+
+                            <button class="btn btn-danger btn-sm"
+                                    onclick="eliminarProducto(${idProducto})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+                });
+            })
+            .catch(err => {
+                console.log("Error al cargar productos admin", err);
+            });
+}
 /* ========================= */
 /* MODAL PRODUCTO */
 /* ========================= */
 
 function abrirModalNuevo() {
-    $('#form-producto')[0].reset();
-    $('#action').val('guardar');
-    $('#tituloModal').text('Nuevo Producto');
-    $('#modalProducto').modal('show');
+    document.getElementById("tituloModal").textContent = "Nuevo Producto";
+    document.getElementById("action").value = "guardar";
+    document.getElementById("id_producto").value = "";
+    document.getElementById("imagenActual").value = "";
+
+    document.getElementById("form-producto").reset();
+
+    limpiarVariantes();
+    agregarVariante();
+
+    const modal = new bootstrap.Modal(document.getElementById("modalProducto"));
+    modal.show();
+}
+const formProducto = document.getElementById("form-producto");
+
+if (formProducto) {
+    formProducto.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const action = document.getElementById("action").value;
+        const formData = new FormData(formProducto);
+
+        let url = "/Mari_Store/ProductoController?action=" + action;
+
+        fetch(url, {
+            method: "POST",
+            body: formData
+        })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta producto:", data);
+
+                    if (data === true || data.success === true) {
+                        Swal.fire({
+                            icon: "success",
+                            title: action === "guardar" ? "Producto registrado" : "Producto actualizado",
+                            text: action === "guardar"
+                                    ? "El producto se guardó correctamente."
+                                    : "El producto se actualizó correctamente.",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        const modalProducto = bootstrap.Modal.getInstance(
+                                document.getElementById("modalProducto")
+                                );
+
+                        if (modalProducto) {
+                            modalProducto.hide();
+                        }
+
+                        formProducto.reset();
+
+                        if (typeof limpiarVariantes === "function") {
+                            limpiarVariantes();
+                        }
+
+                        if ($.fn.DataTable && $.fn.DataTable.isDataTable("#tabla-productos")) {
+                            $("#tabla-productos").DataTable().ajax.reload(null, false);
+                        } else {
+                            cargarProductosAdmin();
+                        }
+
+                    } else {
+                        Swal.fire(
+                                "Error",
+                                data.message || "No se pudo guardar el producto",
+                                "error"
+                                );
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al guardar producto:", error);
+                    Swal.fire("Error", "No se pudo conectar con el controlador", "error");
+                });
+    });
 }
 
-$(document).off('submit', '#form-producto');
+function llenarVariantesProducto(producto) {
+    limpiarVariantes();
 
-$(document).on('submit', '#form-producto', function (e) {
-    e.preventDefault();
-
-    const formData = new FormData(this);
-
-    fetch('ProductoController', {
-        method: 'POST',
-        body: formData
-    })
-            .then(res => res.json())
-            .then(res => {
-                if (res) {
-                    Swal.fire("¡Éxito!", "Producto guardado correctamente", "success");
-                    $('#modalProducto').modal('hide');
-                    cargarTablaAdmin();
-                } else {
-                    Swal.fire("Error", "No se pudo guardar el producto", "error");
-                }
-            })
-            .catch(err => {
-                console.error("Error guardar producto:", err);
-                Swal.fire("Error", "No se pudo guardar el producto", "error");
-            });
-});
-
+    if (producto.variantes && producto.variantes.length > 0) {
+        producto.variantes.forEach(v => {
+            agregarVariante(v.talla, v.color, v.stock);
+        });
+    } else {
+        agregarVariante();
+    }
+}
 /* ========================= */
 /* EDITAR PRODUCTO */
 /* ========================= */
@@ -742,36 +923,224 @@ function editarProducto(id) {
             });
 }
 
+function abrirModalEditar(idProducto) {
+    fetch("/Mari_Store/ProductoController?action=buscar&id=" + idProducto)
+            .then(response => response.json())
+            .then(producto => {
+                document.getElementById("tituloModal").textContent = "Editar Producto";
+                document.getElementById("action").value = "editar";
+
+                document.getElementById("id_producto").value = producto.idProducto;
+                document.getElementById("nombre").value = producto.nombre;
+                document.getElementById("descripcion").value = producto.descripcion;
+                document.getElementById("precio").value = producto.precio;
+                document.getElementById("imagenActual").value = producto.imagen;
+
+                if (producto.categoria) {
+                    document.getElementById("idCategoria").value = producto.categoria.idCategoria;
+                }
+
+                llenarVariantesProducto(producto);
+
+                const modal = new bootstrap.Modal(document.getElementById("modalProducto"));
+                modal.show();
+            })
+            .catch(error => {
+                console.error("Error al buscar producto:", error);
+                alert("No se pudo cargar el producto");
+            });
+}
 /* ========================= */
 /* ELIMINAR PRODUCTO */
 /* ========================= */
 
 function eliminarProducto(id) {
     Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¡No podrás revertir esto!",
-        icon: 'warning',
+        title: "¿Estás seguro?",
+        text: "Si el producto ya tiene ventas registradas, no se podrá eliminar.",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar"
     }).then((result) => {
         if (result.isConfirmed) {
-            fetch(`ProductoController?action=eliminar&id=${id}`, {method: 'POST'})
+            fetch(`/Mari_Store/ProductoController?action=eliminar&id=${id}`, {
+                method: "POST"
+            })
                     .then(res => res.json())
                     .then(res => {
-                        if (res) {
-                            Swal.fire('Eliminado', 'El producto ha sido borrado.', 'success');
-                            cargarTablaAdmin();
+                        console.log("Respuesta eliminar:", res);
+
+                        if (res === true || res.success === true) {
+                            Swal.fire("Eliminado", "El producto ha sido borrado.", "success");
+
+                            if ($.fn.DataTable && $.fn.DataTable.isDataTable("#tabla-productos")) {
+                                $("#tabla-productos").DataTable().ajax.reload(null, false);
+                            } else {
+                                cargarProductosAdmin();
+                            }
+
                         } else {
-                            Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
+                            Swal.fire(
+                                    "No se puede eliminar",
+                                    res.message || "Este producto probablemente ya tiene ventas registradas.",
+                                    "warning"
+                                    );
                         }
                     })
                     .catch(err => {
                         console.error("Error eliminar producto:", err);
-                        Swal.fire('Error', 'No se pudo eliminar el producto.', 'error');
+                        Swal.fire("Error", "No se pudo eliminar el producto.", "error");
                     });
         }
     });
 }
+
+function abrirModalPago() {
+    // 1. Validar si hay usuario logueado
+    fetch("/Mari_Store/AppController?action=perfilUsuario")
+            .then(response => response.json())
+            .then(dataUsuario => {
+
+                if (!dataUsuario.success) {
+                    Swal.fire({
+                        title: "Inicia sesión",
+                        text: "Debes iniciar sesión para finalizar la compra",
+                        icon: "warning",
+                        confirmButtonText: "Iniciar sesión"
+                    }).then(() => {
+                        const modalLogin = bootstrap.Modal.getOrCreateInstance(
+                                document.getElementById("modalLogin")
+                                );
+                        modalLogin.show();
+                    });
+
+                    return;
+                }
+
+                // 2. Validar si el carrito tiene productos
+                fetch("/Mari_Store/AppController?action=listarCarrito")
+                        .then(response => response.json())
+                        .then(dataCarrito => {
+
+                            if (!dataCarrito.items || dataCarrito.items.length === 0) {
+                                Swal.fire({
+                                    title: "Carrito vacío",
+                                    text: "Agrega productos antes de finalizar la compra",
+                                    icon: "warning",
+                                    confirmButtonText: "Ver productos"
+                                }).then(() => {
+                                    window.location.href = "productos.html";
+                                });
+
+                                return;
+                            }
+
+                            // 3. Limpiar modal antes de abrir
+                            document.getElementById("form-pago").reset();
+                            document.getElementById("contenedor-qr").classList.add("d-none");
+                            document.getElementById("imagen-qr").src = "";
+                            document.getElementById("texto-metodo").textContent = "";
+
+                            // 4. Recién abre modal de pago
+                            const modalPago = bootstrap.Modal.getOrCreateInstance(
+                                    document.getElementById("modalPago")
+                                    );
+                            modalPago.show();
+                        })
+                        .catch(error => {
+                            console.error("Error al validar carrito:", error);
+                            Swal.fire("Error", "No se pudo validar el carrito", "error");
+                        });
+
+            })
+            .catch(error => {
+                console.error("Error al validar usuario:", error);
+                Swal.fire("Error", "No se pudo validar la sesión", "error");
+            });
+}
+
+const selectMetodoPago = document.getElementById("metodo_pago");
+
+if (selectMetodoPago) {
+    selectMetodoPago.addEventListener("change", function () {
+        const metodo = this.value;
+        const contenedorQR = document.getElementById("contenedor-qr");
+        const imagenQR = document.getElementById("imagen-qr");
+        const textoMetodo = document.getElementById("texto-metodo");
+
+        if (!contenedorQR || !imagenQR || !textoMetodo) {
+            return;
+        }
+
+        if (metodo === "YAPE") {
+            imagenQR.src = "/Mari_Store/assets/img/pagos/yape-qr.png";
+            textoMetodo.textContent = "Paga con Yape y sube la captura de la operación.";
+            contenedorQR.classList.remove("d-none");
+
+        } else if (metodo === "PLIN") {
+            imagenQR.src = "/Mari_Store/assets/img/pagos/plin-qr.png";
+            textoMetodo.textContent = "Paga con Plin y sube la captura de la operación.";
+            contenedorQR.classList.remove("d-none");
+
+        } else {
+            imagenQR.src = "";
+            textoMetodo.textContent = "";
+            contenedorQR.classList.add("d-none");
+        }
+    });
+}
+
+const formPago = document.getElementById("form-pago");
+
+if (formPago) {
+    formPago.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const metodoPago = document.getElementById("metodo_pago").value;
+        const comprobante = document.getElementById("comprobante").files[0];
+
+        if (!metodoPago) {
+            Swal.fire("Aviso", "Seleccione un método de pago", "warning");
+            return;
+        }
+
+        if (!comprobante) {
+            Swal.fire("Aviso", "Debe subir la captura del comprobante", "warning");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("metodo_pago", metodoPago);
+        formData.append("comprobante", comprobante);
+
+        fetch("/Mari_Store/AppController?action=generarcompra", {
+            method: "POST",
+            body: formData
+        })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Respuesta compra:", data);
+
+                    if (data.success) {
+                        Swal.fire({
+                            title: "Pedido registrado",
+                            text: "Tu pedido está pendiente de aprobación. Puedes verlo en Mis Compras.",
+                            icon: "success"
+                        }).then(() => {
+                            window.location.href = "mis_compras.html";
+                        });
+                    } else {
+                        Swal.fire("Error", data.message || "No se pudo finalizar la compra", "error");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al finalizar compra:", error);
+                    Swal.fire("Error", "No se pudo finalizar la compra", "error");
+                });
+    });
+}
+
+

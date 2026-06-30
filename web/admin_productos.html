@@ -24,6 +24,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                     0
                 </span>
             </a>
+            
+            <a href="historial_ventas.html" class="btn btn-success fw-bold position-relative">
+                <i class="bi bi-receipt-cutoff me-2"></i> Historial de Ventas
+                <span id="contador-pendientes"
+                      class="bi me-2">
+                    
+                </span>
+            </a>
+            
         </div>
 
         <div class="card shadow border-0">
@@ -58,30 +67,58 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
                     <div class="modal-body">
                         <input type="hidden" name="action" id="action" value="guardar">
                         <input type="hidden" name="id_producto" id="id_producto">
+                        <input type="hidden" name="imagenActual" id="imagenActual">
 
                         <div class="mb-3">
                             <label class="form-label">Nombre del Producto</label>
                             <input type="text" name="nombre" id="nombre" class="form-control" required>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Descripción</label>
                             <textarea name="descripcion" id="descripcion" class="form-control" rows="2"></textarea>
                         </div>
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Precio</label>
                                 <input type="number" step="0.01" name="precio" id="precio" class="form-control" required>
                             </div>
+
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Stock</label>
-                                <input type="number" name="stock" id="stock" class="form-control" required>
+                                <label class="form-label">Categoría</label>
+                                <select name="idCategoria" id="idCategoria" class="form-select" required>
+                                    <option value="">Seleccione categoría</option>
+                                    <option value="1">Polos</option>
+                                    <option value="2">Pantalones</option>
+                                    <option value="3">Zapatillas</option>
+                                    <option value="4">Casacas</option>
+                                </select>
                             </div>
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Imagen del Producto</label>
                             <input type="file" name="imagen" id="imagen" class="form-control" accept="image/*">
                         </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h6 class="fw-bold text-secondary mb-0">
+                                <i class="bi bi-tags me-2"></i> Variantes del producto
+                            </h6>
+
+                            <button type="button" class="btn btn-sm btn-success" onclick="agregarVariante()">
+                                <i class="bi bi-plus-circle me-1"></i> Agregar variante
+                            </button>
+                        </div>
+
+                        <div id="contenedor-variantes">
+                            <!-- Aquí se agregan las variantes -->
+                        </div>
                     </div>
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                         <button type="submit" class="btn btn-info text-white">Guardar Producto</button>
@@ -91,27 +128,77 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit thi
         </div>
     </div>
     <footer id="footer-placeholder"></footer>
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
-    cargarContadorPendientes();
-});
+    
 
-function cargarContadorPendientes() {
-    fetch("/Mari_Store/AppController?action=listarPagosPendientes")
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.getElementById("contador-pendientes").textContent = data.cantidad;
-            } else {
-                document.getElementById("contador-pendientes").textContent = 0;
-            }
-        })
-        .catch(error => {
-            console.error("Error al cargar contador:", error);
-            document.getElementById("contador-pendientes").textContent = 0;
+    <script>
+                                function agregarVariante(talla = "", color = "", stock = "") {
+                                    const contenedor = document.getElementById("contenedor-variantes");
+
+                                    const fila = document.createElement("div");
+                                    fila.className = "row align-items-end mb-2 variante-item";
+
+                                    fila.innerHTML = `
+            <div class="col-md-4">
+                <label class="form-label">Talla</label>
+                <input type="text" name="talla" class="form-control" value="${talla}" placeholder="S, M, L, 38..." required>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Color</label>
+                <input type="text" name="color" class="form-control" value="${color}" placeholder="Negro, Blanco..." required>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Stock</label>
+                <input type="number" name="stock" class="form-control" value="${stock}" min="0" required>
+            </div>
+
+            <div class="col-md-1">
+                <button type="button" class="btn btn-danger w-100" onclick="eliminarVariante(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
+
+                                    contenedor.appendChild(fila);
+                                }
+
+                                function eliminarVariante(boton) {
+                                    const variantes = document.querySelectorAll(".variante-item");
+
+                                    if (variantes.length <= 1) {
+                                        alert("Debe existir al menos una variante");
+                                        return;
+                                    }
+
+                                    boton.closest(".variante-item").remove();
+                                }
+
+                                function limpiarVariantes() {
+                                    document.getElementById("contenedor-variantes").innerHTML = "";
+                                }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            cargarContadorPendientes();
         });
-}
-</script>
+
+        function cargarContadorPendientes() {
+            fetch("/Mari_Store/PagoController?action=listarPagosPendientes")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById("contador-pendientes").textContent = data.cantidad;
+                        } else {
+                            document.getElementById("contador-pendientes").textContent = 0;
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error al cargar contador:", error);
+                        document.getElementById("contador-pendientes").textContent = 0;
+                    });
+        }
+    </script>
 </body>
 <script src="assets/js/main.js"></script>
 </html>

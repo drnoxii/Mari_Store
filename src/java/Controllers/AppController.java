@@ -31,12 +31,23 @@ import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 import com.google.gson.JsonArray;
+import jakarta.servlet.annotation.MultipartConfig;
+import jakarta.servlet.http.Part;
+import java.io.File;
+import java.io.InputStream;
+import Util.ConexionSingleton;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  *
  * @author spide
  */
 @WebServlet(name = "AppController", urlPatterns = {"/AppController"})
+@MultipartConfig
 public class AppController extends HttpServlet {
 
     private IProducto pDao = new ProductoDaoImpl();
@@ -220,7 +231,39 @@ public class AppController extends HttpServlet {
                     }
 
                     String metodoPagoParam = request.getParameter("metodo_pago");
-                    String comprobante = request.getParameter("comprobante");
+                    String comprobante = "";
+
+                    Part partComprobante = request.getPart("comprobante");
+
+                    if (partComprobante == null || partComprobante.getSize() <= 0) {
+                        jsonResponse.addProperty("success", false);
+                        jsonResponse.addProperty("message", "Debe subir la captura del comprobante");
+                        out.print(jsonResponse.toString());
+                        return;
+                    }
+
+                    String fileName = System.currentTimeMillis() + "_" + partComprobante.getSubmittedFileName();
+
+                    String uploadDir = "assets/img/comprobantes";
+                    String pathBuild = getServletContext().getRealPath("/" + uploadDir + File.separator);
+                    String pathSource = pathBuild.replace("build" + File.separator + "web", "web");
+
+                    new File(pathSource).mkdirs();
+                    new File(pathBuild).mkdirs();
+
+                    File fileSource = new File(pathSource + File.separator + fileName);
+
+                    try (InputStream input = partComprobante.getInputStream()) {
+                        java.nio.file.Files.copy(
+                                input,
+                                fileSource.toPath(),
+                                java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                        );
+                    }
+
+                    partComprobante.write(pathBuild + File.separator + fileName);
+
+                    comprobante = uploadDir + "/" + fileName;
 
                     if (metodoPagoParam == null || metodoPagoParam.trim().isEmpty()) {
                         jsonResponse.addProperty("success", false);
@@ -280,11 +323,9 @@ public class AppController extends HttpServlet {
 
                     Pedido pedido = new Pedido();
 
-                    
                     pedido.setUsuario(user);
                     pedido.setTotal(totalPagar);
 
-                    
                     pedido.setEstadopedido(EstadoPedido.PENDIENTE);
                     pedido.setDetallePedido(listCarrito);
 
@@ -335,7 +376,144 @@ public class AppController extends HttpServlet {
                     out.print(jsonResponse.toString());
                     break;
                 }
-                
+                case "perfilUsuario": {
+                    Usuario user = (Usuario) session.getAttribute("usuario");
+
+                    if (user == null) {
+                        jsonResponse.addProperty("success", false);
+                        jsonResponse.addProperty("message", "Debe iniciar sesión");
+                        out.print(jsonResponse.toString());
+                        return;
+                    }
+
+                    JsonObject usuarioJson = new JsonObject();
+
+                    usuarioJson.addProperty("idUsuario", user.getIdUsuario());
+                    usuarioJson.addProperty("email", user.getEmail());
+
+                    if (user.getRol() != null) {
+                        usuarioJson.addProperty("rol", user.getRol().toString());
+                    } else {
+                        usuarioJson.addProperty("rol", "CLIENTE");
+                    }
+
+                    if (user.getPersona() != null) {
+                        usuarioJson.addProperty("idPersona", user.getPersona().getIdPersona());
+                        usuarioJson.addProperty("nombre", user.getPersona().getNombre());
+                        usuarioJson.addProperty("apellidos", user.getPersona().getApellidos());
+                        usuarioJson.addProperty("dni", user.getPersona().getDNI());
+                        usuarioJson.addProperty("telefono", user.getPersona().getTelefono());
+
+                        try {
+                            if (user.getPersona().getFecha_nacimiento() != null) {
+                                usuarioJson.addProperty("fechaNacimiento", user.getPersona().getFecha_nacimiento().toString());
+                            } else {
+                                usuarioJson.addProperty("fechaNacimiento", "");
+                            }
+                        } catch (Exception e) {
+                            usuarioJson.addProperty("fechaNacimiento", "");
+                        }
+                    }
+
+                    jsonResponse.addProperty("success", true);
+                    jsonResponse.add("usuario", usuarioJson);
+
+                    out.print(jsonResponse.toString());
+                    break;
+                }
+                case "misCompras": {
+                    Usuario user = (Usuario) session.getAttribute("usuario");
+
+                    if (user == null) {
+                        jsonResponse.addProperty("success", false);
+                        jsonResponse.addProperty("message", "Debe iniciar sesión");
+                        out.print(jsonResponse.toString());
+                        return;
+                    }
+
+                    JsonArray compras = new JsonArray();
+
+                    String sql = "SELECT "
+                            + "p.idPedido, p.estado, p.total, "
+                            + "pa.metodo_pago, pa.monto, pa.comprobante, pa.fecha_pago, "
+                            + "prod.nombre AS nombreProducto, "
+                            + "dprod.talla, dprod.color, "
+                            + "dp.cantidad, dp.precio_unitario, dp.subtotal "
+                            + "FROM pedido p "
+                            + "INNER JOIN detalle_pedido dp ON p.idPedido = dp.idPedido "
+                            + "INNER JOIN detalle_producto dprod ON dp.idDetalle = dprod.idDetalle "
+                            + "INNER JOIN producto prod ON dprod.idProducto = prod.idProducto "
+                            + "LEFT JOIN pago pa ON p.idPedido = pa.idPedido "
+                            + "WHERE p.idUsuario = ? "
+                            + "ORDER BY p.idPedido DESC";
+
+                    try {
+                        Connection cn = ConexionSingleton.getConnection();
+                        PreparedStatement ps = cn.prepareStatement(sql);
+                        ps.setInt(1, user.getIdUsuario());
+
+                        ResultSet rs = ps.executeQuery();
+
+                        Map<Integer, JsonObject> mapaPedidos = new LinkedHashMap<>();
+
+                        while (rs.next()) {
+                            int idPedido = rs.getInt("idPedido");
+
+                            JsonObject pedidoJson;
+
+                            if (!mapaPedidos.containsKey(idPedido)) {
+                                pedidoJson = new JsonObject();
+
+                                pedidoJson.addProperty("idPedido", idPedido);
+                                pedidoJson.addProperty("estado", rs.getString("estado"));
+                                pedidoJson.addProperty("total", rs.getDouble("total"));
+
+                                if (rs.getTimestamp("fecha_pago") != null) {
+                                    pedidoJson.addProperty("fechaPago", rs.getTimestamp("fecha_pago").toString());
+                                } else {
+                                    pedidoJson.addProperty("fechaPago", "");
+                                }
+
+                                pedidoJson.addProperty("metodoPago", rs.getString("metodo_pago"));
+                                pedidoJson.addProperty("monto", rs.getDouble("monto"));
+                                pedidoJson.addProperty("comprobante", rs.getString("comprobante"));
+
+                                pedidoJson.add("detalle", new JsonArray());
+
+                                mapaPedidos.put(idPedido, pedidoJson);
+                            }
+
+                            pedidoJson = mapaPedidos.get(idPedido);
+
+                            JsonObject item = new JsonObject();
+
+                            item.addProperty("nombreProducto", rs.getString("nombreProducto"));
+                            item.addProperty("talla", rs.getString("talla"));
+                            item.addProperty("color", rs.getString("color"));
+                            item.addProperty("cantidad", rs.getInt("cantidad"));
+                            item.addProperty("precioUnitario", rs.getDouble("precio_unitario"));
+                            item.addProperty("subtotal", rs.getDouble("subtotal"));
+
+                            pedidoJson.getAsJsonArray("detalle").add(item);
+                        }
+
+                        for (JsonObject pedido : mapaPedidos.values()) {
+                            compras.add(pedido);
+                        }
+
+                        jsonResponse.addProperty("success", true);
+                        jsonResponse.add("compras", compras);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        jsonResponse.addProperty("success", false);
+                        jsonResponse.addProperty("message", "Error al listar mis compras: " + e.getMessage());
+                    }
+
+                    out.print(jsonResponse.toString());
+                    break;
+                }
+
                 default:
                     jsonResponse.addProperty("success", false);
                     jsonResponse.addProperty("messagge", "accion no encontrada");

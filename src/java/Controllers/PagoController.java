@@ -16,6 +16,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import Util.ConexionSingleton;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 @WebServlet(name = "PagoController", urlPatterns = {"/PagoController"})
 public class PagoController extends HttpServlet {
@@ -156,6 +160,10 @@ public class PagoController extends HttpServlet {
                         return;
                     }
                 }
+                case "historialVentas": {
+                    listarHistorialVentas(out);
+                    break;
+                }
 
                 default: {
                     jsonResponse.addProperty("success", false);
@@ -165,6 +173,72 @@ public class PagoController extends HttpServlet {
                 }
             }
         }
+    }
+
+    private void listarHistorialVentas(PrintWriter out) {
+        JsonObject respuesta = new JsonObject();
+        JsonArray data = new JsonArray();
+
+        String sql = "SELECT "
+                + "p.idPedido, p.estado, p.total, "
+                + "u.email, per.nombre, per.apellidos, "
+                + "pa.idPago, pa.metodo_pago, pa.monto, pa.comprobante, pa.fecha_pago AS fecha, "
+                + "GROUP_CONCAT(CONCAT(prod.nombre, ' (', dprod.talla, ' / ', dprod.color, ') x', dp.cantidad) SEPARATOR ' | ') AS productos "
+                + "FROM pedido p "
+                + "INNER JOIN usuario u ON p.idUsuario = u.idUsuario "
+                + "INNER JOIN persona per ON u.idPersona = per.idPersona "
+                + "LEFT JOIN pago pa ON p.idPedido = pa.idPedido "
+                + "LEFT JOIN detalle_pedido dp ON p.idPedido = dp.idPedido "
+                + "LEFT JOIN detalle_producto dprod ON dp.idDetalle = dprod.idDetalle "
+                + "LEFT JOIN producto prod ON dprod.idProducto = prod.idProducto "
+                + "GROUP BY p.idPedido, p.estado, p.total, "
+                + "u.email, per.nombre, per.apellidos, "
+                + "pa.idPago, pa.metodo_pago, pa.monto, pa.comprobante, pa.fecha_pago "
+                + "ORDER BY p.idPedido DESC";
+
+        try {
+            Connection cn = ConexionSingleton.getConnection();
+            PreparedStatement ps = cn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                JsonObject item = new JsonObject();
+
+                item.addProperty("idPedido", rs.getInt("idPedido"));
+
+                // Fecha de venta, usando la fecha del pago
+                java.sql.Timestamp fecha = rs.getTimestamp("fecha");
+                item.addProperty("fecha", fecha != null ? fecha.toString() : "");
+
+                item.addProperty("estado", rs.getString("estado"));
+                item.addProperty("total", rs.getDouble("total"));
+
+                item.addProperty("cliente", rs.getString("nombre") + " " + rs.getString("apellidos"));
+                item.addProperty("email", rs.getString("email"));
+
+                item.addProperty("idPago", rs.getInt("idPago"));
+                item.addProperty("metodoPago", rs.getString("metodo_pago"));
+                item.addProperty("monto", rs.getDouble("monto"));
+                item.addProperty("comprobante", rs.getString("comprobante"));
+
+                // Si quieres también mandar fechaPago, puedes usar la misma fecha
+                item.addProperty("fechaPago", fecha != null ? fecha.toString() : "");
+
+                item.addProperty("productos", rs.getString("productos"));
+
+                data.add(item);
+            }
+
+            respuesta.addProperty("success", true);
+            respuesta.add("data", data);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            respuesta.addProperty("success", false);
+            respuesta.addProperty("message", "Error al listar historial de ventas: " + e.getMessage());
+        }
+
+        out.print(respuesta.toString());
     }
 
     @Override
