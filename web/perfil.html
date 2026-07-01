@@ -87,47 +87,7 @@
 <footer id="footer-placeholder"></footer>
 
 <script src="assets/js/main.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    cargarPerfilUsuario();
-});
-
-function cargarPerfilUsuario() {
-    fetch("/Mari_Store/AppController?action=perfilUsuario")
-        .then(response => response.json())
-        .then(data => {
-            console.log("Perfil usuario:", data);
-
-            if (!data.success) {
-                Swal.fire("Aviso", data.message || "Debe iniciar sesión", "warning")
-                    .then(() => {
-                        window.location.href = "index.html";
-                    });
-                return;
-            }
-
-            const usuario = data.usuario;
-
-            document.getElementById("perfil-nombre").textContent = usuario.nombre || "";
-            document.getElementById("perfil-apellidos").textContent = usuario.apellidos || "";
-            document.getElementById("perfil-dni").textContent = usuario.dni || "";
-            document.getElementById("perfil-telefono").textContent = usuario.telefono || "";
-            document.getElementById("perfil-fecha").textContent = usuario.fechaNacimiento || "No registrado";
-            document.getElementById("perfil-email").textContent = usuario.email || "";
-            document.getElementById("perfil-rol").textContent = usuario.rol || "";
-
-            document.getElementById("perfil-loading").style.display = "none";
-            document.getElementById("perfil-contenido").style.display = "block";
-        })
-        .catch(error => {
-            console.error("Error al cargar perfil:", error);
-
-            document.getElementById("perfil-loading").style.display = "none";
-            document.getElementById("perfil-error").classList.remove("d-none");
-        });
-}
-</script>
+<script src="assets/js/cliente.js"></script>
 
 </body>
 </html>

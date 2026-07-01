@@ -1,123 +1,4 @@
-function obtenerVariantes(p) {
-    return p.variantes || p.detalles || p.detalleProductos || [];
-}
-
-function obtenerIdProducto(p) {
-    return p.id_producto || p.idProducto || p.id || 0;
-}
-
-function obtenerIdDetalle(v) {
-    return v.idDetalle || v.id_detalle || v.id || 0;
-}
-
-function calcularStockTotal(p) {
-    const variantes = obtenerVariantes(p);
-
-    if (variantes.length > 0) {
-        return variantes.reduce((total, v) => total + (Number(v.stock) || 0), 0);
-    }
-
-    return Number(p.stock) || 0;
-}
-
-function claseStock(stock) {
-    if (stock > 10) {
-        return "bg-light text-success border border-success";
-    }
-
-    if (stock > 0) {
-        return "bg-light text-warning border border-warning";
-    }
-
-    return "bg-light text-danger border border-danger";
-}
-
-function textoStock(stock) {
-    if (stock > 10) {
-        return `Stock: ${stock}`;
-    }
-
-    if (stock > 0) {
-        return `Últimos ${stock}`;
-    }
-
-    return "Sin stock";
-}
-
-function formatearPrecio(precio) {
-    return `S/ ${Number(precio || 0).toFixed(2)}`;
-}
-
-function renderSelectVariantes(p, idProducto) {
-    const variantes = obtenerVariantes(p);
-
-    if (variantes.length === 0) {
-        return "";
-    }
-
-    const primeraDisponible = variantes.findIndex(v => Number(v.stock) > 0);
-
-    const opciones = variantes.map((v, index) => {
-        const idDetalle = obtenerIdDetalle(v);
-        const talla = v.talla || "Sin talla";
-        const color = v.color || "Sin color";
-        const stock = Number(v.stock) || 0;
-
-        const disabled = stock <= 0 ? "disabled" : "";
-        const selected = index === primeraDisponible ? "selected" : "";
-
-        return `
-            <option value="${idDetalle}" data-stock="${stock}" ${disabled} ${selected}>
-                ${talla} / ${color} - Stock: ${stock}
-            </option>
-        `;
-    }).join("");
-
-    const stockInicial = primeraDisponible >= 0
-            ? Number(variantes[primeraDisponible].stock) || 0
-            : 0;
-
-    return `
-        <div class="mt-2">
-            <select class="form-select form-select-sm"
-                    id="variante-${idProducto}"
-                    onchange="actualizarStockSeleccionado(${idProducto})">
-                ${opciones}
-            </select>
-
-            <small id="stock-variante-${idProducto}" class="text-muted d-block mt-1">
-                Stock de variante: ${stockInicial}
-            </small>
-        </div>
-    `;
-}
-
-function actualizarStockSeleccionado(idProducto) {
-    const select = document.getElementById(`variante-${idProducto}`);
-    const texto = document.getElementById(`stock-variante-${idProducto}`);
-
-    if (!select || !texto) {
-        return;
-    }
-
-    const stock = select.options[select.selectedIndex].dataset.stock || 0;
-    texto.textContent = `Stock de variante: ${stock}`;
-}
-
-function obtenerIdDetalleSeleccionado(idProducto) {
-    const select = document.getElementById(`variante-${idProducto}`);
-
-    if (!select) {
-        return "";
-    }
-
-    return select.value;
-}
-
-/* ========================= */
-/* PRODUCTOS INDEX */
-/* ========================= */
-
+// cargar productos index
 function cargarProductos() {
     const contenedor = $('#lista-productos');
 
@@ -125,7 +6,7 @@ function cargarProductos() {
         return;
     }
 
-    fetch('AppController?action=listarProductos')
+    fetch('/Mari_Store/AppController?action=listarProductos')
             .then(res => res.json())
             .then(productos => {
                 contenedor.empty();
@@ -237,7 +118,7 @@ function filtrarProductosPorCategoria(categoria) {
     });
 }
 
-/* CARRITO */
+// carrit
 
 function agregarCarrito(idProducto) {
     const idDetalle = obtenerIdDetalleSeleccionado(idProducto);
@@ -391,13 +272,7 @@ function eliminarItemCarrito(idProducto, idDetalle) {
                 Swal.fire("Error", "No se pudo eliminar el producto del carrito", "error");
             });
 }
-
-
-
-/* ========================= */
-/* SESIÓN */
-/* ========================= */
-
+// js de sesion
 function verificarSesion() {
     const user = JSON.parse(sessionStorage.getItem("usuario"));
 
@@ -442,11 +317,7 @@ function logout() {
                 window.location.href = "index.html";
             });
 }
-
-
-/* LOGIN Y REGISTRO */
-
-
+// login y registro
 function inicializarEventosAuth() {
     $(document).off('submit', '#form-login');
     $(document).off('submit', '#form-register');
@@ -512,9 +383,29 @@ function inicializarEventosAuth() {
     });
 }
 
-/* PROCESAR COMPRA */
+function ojitodepass() {
+    const btn = document.getElementById("btnToggleLoginPassword");
+    const input = document.getElementById("loginPassword");
+    const icon = document.getElementById("iconLoginPassword");
 
+    if (!btn || !input || !icon) {
+        return;
+    }
 
+    btn.addEventListener("click", function () {
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            input.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    });
+}
+
+// procesar compra
 function procesarCompra() {
     const cantidadProductos = parseInt($('#cart-count').text()) || 0;
 
@@ -633,9 +524,7 @@ function finalizarCompra() {
             });
 }
 
-/* ========================= */
-/* ADMIN PRODUCTOS */
-/* ========================= */
+// admin productos
 
 function cargarTablaAdmin() {
     const tablaElemento = $('#tabla-productos');
@@ -847,8 +736,7 @@ function cargarProductosAdmin() {
             });
 }
 
-/* MODAL PRODUCTO */
-
+// modal producto
 
 function abrirModalNuevo() {
     document.getElementById("tituloModal").textContent = "Nuevo Producto";
@@ -941,9 +829,7 @@ function llenarVariantesProducto(producto) {
     }
 }
 
-/* EDITAR PRODUCTO */
-
-
+// editar producto
 function editarProducto(id) {
     fetch(`ProductoController?action=buscar&id=${id}`)
             .then(res => res.json())
@@ -954,18 +840,7 @@ function editarProducto(id) {
                 $('#nombre').val(p.nombre);
                 $('#descripcion').val(p.descripcion);
                 $('#precio').val(p.precio);
-
-                /*
-                 * Si tu formulario todavía tiene un input #stock simple,
-                 * aquí se muestra el stock total calculado de todas las variantes.
-                 */
                 $('#stock').val(stockTotal);
-
-                /*
-                 * Si luego agregas campos para editar variantes en el modal,
-                 * aquí se puede llenar dinámicamente con p.variantes.
-                 */
-
                 $('#action').val('editar');
                 $('#tituloModal').text('Editar Producto');
                 $('#modalProducto').modal('show');
@@ -1004,7 +879,7 @@ function abrirModalEditar(idProducto) {
             });
 }
 
-/* ELIMINAR PRODUCTO */
+// eliminar producto
 
 
 function eliminarProducto(id) {
@@ -1194,6 +1069,123 @@ if (formPago) {
                     Swal.fire("Error", "No se pudo finalizar la compra", "error");
                 });
     });
+}
+
+
+function obtenerVariantes(p) {
+    return p.variantes || p.detalles || p.detalleProductos || [];
+}
+
+function obtenerIdProducto(p) {
+    return p.id_producto || p.idProducto || p.id || 0;
+}
+
+function obtenerIdDetalle(v) {
+    return v.idDetalle || v.id_detalle || v.id || 0;
+}
+
+function calcularStockTotal(p) {
+    const variantes = obtenerVariantes(p);
+
+    if (variantes.length > 0) {
+        return variantes.reduce((total, v) => total + (Number(v.stock) || 0), 0);
+    }
+
+    return Number(p.stock) || 0;
+}
+
+function claseStock(stock) {
+    if (stock > 10) {
+        return "bg-light text-success border border-success";
+    }
+
+    if (stock > 0) {
+        return "bg-light text-warning border border-warning";
+    }
+
+    return "bg-light text-danger border border-danger";
+}
+
+function textoStock(stock) {
+    if (stock > 10) {
+        return `Stock: ${stock}`;
+    }
+
+    if (stock > 0) {
+        return `Últimos ${stock}`;
+    }
+
+    return "Sin stock";
+}
+
+function formatearPrecio(precio) {
+    return `S/ ${Number(precio || 0).toFixed(2)}`;
+}
+
+function renderSelectVariantes(p, idProducto) {
+    const variantes = obtenerVariantes(p);
+
+    if (variantes.length === 0) {
+        return "";
+    }
+
+    const primeraDisponible = variantes.findIndex(v => Number(v.stock) > 0);
+
+    const opciones = variantes.map((v, index) => {
+        const idDetalle = obtenerIdDetalle(v);
+        const talla = v.talla || "Sin talla";
+        const color = v.color || "Sin color";
+        const stock = Number(v.stock) || 0;
+
+        const disabled = stock <= 0 ? "disabled" : "";
+        const selected = index === primeraDisponible ? "selected" : "";
+
+        return `
+            <option value="${idDetalle}" data-stock="${stock}" ${disabled} ${selected}>
+                ${talla} / ${color} - Stock: ${stock}
+            </option>
+        `;
+    }).join("");
+
+    const stockInicial = primeraDisponible >= 0
+            ? Number(variantes[primeraDisponible].stock) || 0
+            : 0;
+
+    return `
+        <div class="mt-2">
+            <select class="form-select form-select-sm"
+                    id="variante-${idProducto}"
+                    onchange="actualizarStockSeleccionado(${idProducto})">
+                ${opciones}
+            </select>
+
+            <small id="stock-variante-${idProducto}" class="text-muted d-block mt-1">
+                Stock de variante: ${stockInicial}
+            </small>
+        </div>
+    `;
+}
+
+function actualizarStockSeleccionado(idProducto) {
+    const select = document.getElementById(`variante-${idProducto}`);
+    const texto = document.getElementById(`stock-variante-${idProducto}`);
+
+    if (!select || !texto) {
+        return;
+    }
+
+    const stock = select.options[select.selectedIndex].dataset.stock || 0;
+    texto.textContent = `Stock de variante: ${stock}`;
+}
+
+function obtenerIdDetalleSeleccionado(idProducto) {
+    const select = document.getElementById(`variante-${idProducto}`);
+
+    if (!select) {
+        return "";
+    }
+
+    return select.value;
 }
 
 

@@ -126,9 +126,22 @@
                         <input type="email" name="email" class="form-control" required>
                     </div>
 
-                    <div class="mb-3 text-start">
-                        <label class="form-label">Contraseña</label>
-                        <input type="password" name="password" class="form-control" required>
+                    <div class="mb-3">
+                        <label for="loginPassword" class="form-label">Contraseña</label>
+
+                        <div class="input-group">
+                            <input type="password"
+                                   class="form-control"
+                                   id="loginPassword"
+                                   name="contraseña"
+                                   placeholder="Ingrese su contraseña">
+
+                            <button class="btn btn-outline-secondary"
+                                    type="button"
+                                    id="btnToggleLoginPassword">
+                                <i class="bi bi-eye" id="iconLoginPassword"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-info text-white w-100">

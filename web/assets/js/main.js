@@ -43,14 +43,12 @@ async function init() {
 
         await loadScript('assets/js/tienda.js');
         setTimeout(() => {
-            if (typeof verificarSesion() === 'function')
-                verificarSesion();
+            if (typeof verificarSesion() === 'function'){
+                verificarSesion();}
             if (typeof cargarProductos() === 'function')
                 cargarProductos();
             if (typeof inicializarEventosAuth() === 'function')
                 inicializarEventosAuth();
-            //if(typeof agregarCarrito() === 'function')
-            //   agregarCarrito();
             if (typeof actualizarContadorCarrito() === 'function')
                 actualizarContadorCarrito();
             if (typeof cargarCarrito() === 'function')
@@ -61,7 +59,8 @@ async function init() {
                 cargarProductosAdmin();
             if (typeof inicializarFiltroCategorias() === 'function')
                 inicializarFiltroCategorias();
-            
+            if(typeof ojitodepass()() === 'function')
+                ojitodepass()();
         }, 200);
 
     } catch (e) {
