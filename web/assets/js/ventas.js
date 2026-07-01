@@ -64,25 +64,17 @@ function normalizarRutaComprobante(ruta) {
         return "";
     }
 
-    /*
-     Si ya viene con /Mari_Store, la dejamos igual.
-     Ejemplo: /Mari_Store/assets/img/comprobantes/foto.jpg
-     */
+
     if (ruta.startsWith("/Mari_Store/")) {
         return ruta;
     }
 
-    /*
-     Si viene como assets/img/comprobantes/foto.jpg,
-     le agregamos el contexto del proyecto.
-     */
+
     if (ruta.startsWith("assets/")) {
         return "/Mari_Store/" + ruta;
     }
 
-    /*
-     Si solo viene el nombre del archivo, asumimos que está en comprobantes.
-     */
+
     return "/Mari_Store/assets/img/comprobantes/" + ruta;
 }
 
@@ -102,60 +94,87 @@ function verComprobante(rutaImagen) {
 
 function aprobarPago(idPedido) {
     Swal.fire({
-        title: "¿Aprobar pago?",
-        text: "Al aprobar este pago, el pedido pasará a estado procesado.",
+        title: "Revisar pago",
+        text: "Selecciona qué deseas hacer con este pago.",
         icon: "question",
         showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: "Aceptar pago",
+        denyButtonText: "Denegar pago",
+        cancelButtonText: "Cancelar",
         confirmButtonColor: "#198754",
-        cancelButtonColor: "#6c757d",
-        confirmButtonText: "Sí, aprobar",
-        cancelButtonText: "Cancelar"
+        denyButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d"
+    }).then((result) => {
+
+        if (result.isConfirmed) {
+            aceptarPago(idPedido);
+        } else if (result.isDenied) {
+            denegarPago(idPedido);
+        }
+
+    });
+}
+
+function aceptarPago(idPedido) {
+    Swal.fire({
+        title: "Procesando...",
+        text: "Aprobando el pago.",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
+
+    fetch("/Mari_Store/PagoController?action=aprobarPago&idPedido=" + idPedido, {
+        method: "POST"
+    })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire("Pago aprobado", data.message || "El pago fue aprobado correctamente.", "success")
+                            .then(() => cargarPagosPendientes());
+                } else {
+                    Swal.fire("Error", data.message || "No se pudo aprobar el pago.", "error");
+                }
+            })
+            .catch(error => {
+                console.error("Error al aprobar pago:", error);
+                Swal.fire("Error", "No se pudo conectar con el servidor.", "error");
+            });
+}
+
+function denegarPago(idPedido) {
+    Swal.fire({
+        title: "¿Denegar pago?",
+        text: "El pedido será marcado como cancelado.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, denegar",
+        cancelButtonText: "Volver",
+        confirmButtonColor: "#dc3545",
+        cancelButtonColor: "#6c757d"
     }).then((result) => {
         if (result.isConfirmed) {
-
-            Swal.fire({
-                title: "Procesando...",
-                text: "Aprobando el pago, espera un momento.",
-                allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-            fetch("/Mari_Store/PagoController?action=aprobarPago&idPedido=" + idPedido, {
+            fetch("/Mari_Store/PagoController?action=denegarPago&idPedido=" + idPedido, {
                 method: "POST"
             })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            Swal.fire({
-                                title: "Pago aprobado",
-                                text: data.message || "El pedido fue aprobado correctamente.",
-                                icon: "success",
-                                confirmButtonColor: "#198754"
-                            }).then(() => {
-                                cargarPagosPendientes();
-                            });
+                            Swal.fire("Pago denegado", data.message || "El pedido fue cancelado.", "success")
+                                    .then(() => cargarPagosPendientes());
                         } else {
-                            Swal.fire({
-                                title: "No se pudo aprobar",
-                                text: data.message || "Ocurrió un problema al aprobar el pago.",
-                                icon: "error",
-                                confirmButtonColor: "#dc3545"
-                            });
+                            Swal.fire("Error", data.message || "No se pudo denegar el pago.", "error");
                         }
                     })
                     .catch(error => {
-                        console.error("Error al aprobar pago:", error);
-                        Swal.fire({
-                            title: "Error",
-                            text: "No se pudo conectar con el servidor.",
-                            icon: "error",
-                            confirmButtonColor: "#dc3545"
-                        });
+                        console.error("Error al denegar pago:", error);
+                        Swal.fire("Error", "No se pudo conectar con el servidor.", "error");
                     });
         }
     });
 }
+
+
 
 
 document.addEventListener("DOMContentLoaded", function () {

@@ -6,7 +6,7 @@ import Interface.IPersona;
 import Interface.IUsuario;
 import Model.Persona;
 import Model.Usuario;
-import Model.Rol; // Si te da error, cambia Rol.CLIENTE por Usuario.Rol.CLIENTE
+import Model.Rol; 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.io.IOException;
@@ -85,12 +85,7 @@ public class AuthController extends HttpServlet {
 
         String email = request.getParameter("email");
 
-        /*
-         * Acepta ambos nombres:
-         * - contraseña
-         * - password
-         * Así no se rompe si tu formulario usa uno u otro.
-         */
+        
         String contraseña = request.getParameter("contraseña");
 
         if (contraseña == null || contraseña.trim().isEmpty()) {
@@ -114,13 +109,6 @@ public class AuthController extends HttpServlet {
                 userData.addProperty("rol", "CLIENTE");
             }
 
-            /*
-             * Te mando el nombre de las dos formas:
-             * 1. userData.nombre
-             * 2. userData.persona.nombre
-             *
-             * Así funciona aunque tu JS use cualquiera de las dos.
-             */
             if (us.getPersona() != null) {
                 userData.addProperty("nombre", us.getPersona().getNombre());
 
@@ -165,10 +153,6 @@ public class AuthController extends HttpServlet {
 
         u.setContraseña(contraseña);
 
-        /*
-         * Registro público siempre CLIENTE.
-         * No dejes que el usuario elija ADMIN desde el formulario normal.
-         */
         u.setRol(Rol.CLIENTE);
 
         int resultado = pDao.insert(p, u);

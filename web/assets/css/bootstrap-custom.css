@@ -96,17 +96,67 @@
     object-fit: cover;
 }
 
-.carousel-inner img {
+/*.carousel-inner img {
     width: 100%;
     height: 400px;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
+    background-color: #f8f9fa;
     transition: transform 0.5s ease;
-}
+} */
 
 .carousel-item:hover img {
     transform: scale(1.05);
 }
+#carouselExampleIndicators {
+    max-width: 1160px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+}
 
+#carouselExampleIndicators .carousel-inner {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+#carouselExampleIndicators .carousel-item {
+    height: 400px;
+    background-color: #f8f9fa;
+}
+
+#carouselExampleIndicators .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    display: block;
+}
+
+/* Flechas visibles */
+#carouselExampleIndicators .carousel-control-prev,
+#carouselExampleIndicators .carousel-control-next {
+    width: 8%;
+    opacity: 1;
+    z-index: 10;
+}
+
+#carouselExampleIndicators .carousel-control-prev-icon,
+#carouselExampleIndicators .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.45);
+    border-radius: 50%;
+    padding: 22px;
+    background-size: 60%;
+}
+
+/* Indicadores visibles */
+#carouselExampleIndicators .carousel-indicators {
+    z-index: 11;
+}
+
+#carouselExampleIndicators .carousel-indicators button {
+    background-color: #333;
+}
 
 
 @media (max-width: 992px) {

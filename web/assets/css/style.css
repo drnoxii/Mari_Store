@@ -363,9 +363,13 @@ main {
 }
 
 .img-product {
-    object-fit: cover;
-    width: 250px;
+    width: 100%;
     height: 250px;
+    object-fit: contain;
+    object-position: center;
+    background-color: #f8f9fa;
+    padding: 10px;
+    display: block;
 }
 
 .precio {
@@ -603,3 +607,4 @@ main {
 span {
     color: #12191C ;
 }
+

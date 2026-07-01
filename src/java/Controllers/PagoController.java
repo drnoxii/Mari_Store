@@ -165,6 +165,37 @@ public class PagoController extends HttpServlet {
                     break;
                 }
 
+                case "denegarPago": {
+                    int idPedido = Integer.parseInt(request.getParameter("idPedido"));
+
+                    String sql = "UPDATE pedido SET estado = 'CANCELADO' WHERE idPedido = ?";
+
+                    try {
+                        Connection cn = ConexionSingleton.getConnection();
+                        PreparedStatement ps = cn.prepareStatement(sql);
+
+                        ps.setInt(1, idPedido);
+
+                        int filas = ps.executeUpdate();
+
+                        if (filas > 0) {
+                            jsonResponse.addProperty("success", true);
+                            jsonResponse.addProperty("message", "El pago fue denegado y el pedido fue cancelado.");
+                        } else {
+                            jsonResponse.addProperty("success", false);
+                            jsonResponse.addProperty("message", "No se encontró el pedido.");
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        jsonResponse.addProperty("success", false);
+                        jsonResponse.addProperty("message", "Error al denegar pago: " + e.getMessage());
+                    }
+
+                    out.print(jsonResponse.toString());
+                    break;
+                }
+
                 default: {
                     jsonResponse.addProperty("success", false);
                     jsonResponse.addProperty("message", "Acción no encontrada");

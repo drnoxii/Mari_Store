@@ -6,9 +6,12 @@
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/test/Test/Test_FlujoPago.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Dao/PersonaDaoImpl.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Dao/PedidoDaoImpl.java</file>
+            <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/web/assets/js/admin_productos.js</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/test/Test/Test_Producto.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/EstadoPedido.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/Rol.java</file>
+            <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/web/assets/js/cliente.js</file>
+            <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/web/assets/js/ventas.js</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Controllers/AppController.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Interface/IUsuario.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Dao/UsuarioDaoImpl.java</file>
@@ -30,6 +33,7 @@
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Dao/ProductoDaoImpl.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Controllers/ProductoController.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Interface/IPedido.java</file>
+            <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Util/AdminFilter.java</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/web/assets/js/main.js</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/web/pagos_pendientes.html</file>
             <file>file:/C:/Users/spide/OneDrive/Documentos/NetBeansProjects/Mari_Store/src/java/Model/Usuario.java</file>
